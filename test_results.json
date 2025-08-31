@@ -1,0 +1,241 @@
+{
+  "basic_functionality": {
+    "test_type": "basic_functionality",
+    "results": [
+      {
+        "test_name": "Saudação",
+        "input": "Olá",
+        "response": "olá! sou seu assistente de suporte técnico com ia avançada. como posso ajudá-lo hoje?",
+        "type_correct": true,
+        "keywords_score": 0.5,
+        "confidence": 3.0,
+        "passed": true
+      },
+      {
+        "test_name": "Configuração Wi-Fi",
+        "input": "Como configurar Wi-Fi?",
+        "response": "para configurar seu wi-fi, siga estes passos:\n1. acesse as configurações de rede do seu dispositivo\n2. procure por redes wi-fi disponíveis\n3. selecione sua rede\n4. digite a senha da rede\n5. clique em conectar\n\nse não conseguir conectar, posso fazer um diagnóstico mais detalhado. digite 'diagnóstico wifi'.",
+        "type_correct": true,
+        "keywords_score": 1.0,
+        "confidence": 2.3333333333333335,
+        "passed": true
+      },
+      {
+        "test_name": "Redefinição de Senha",
+        "input": "Esqueci minha senha",
+        "response": "para redefinir sua senha:\n1. acesse a página de login\n2. clique em 'esqueci minha senha'\n3. digite seu email cadastrado\n4. verifique seu email para instruções\n5. siga o link recebido para criar uma nova senha\n\npara um diagnóstico personalizado, digite 'diagnóstico senha'.",
+        "type_correct": true,
+        "keywords_score": 1.0,
+        "confidence": 3.0,
+        "passed": true
+      },
+      {
+        "test_name": "Problema com Impressora",
+        "input": "Impressora não funciona",
+        "response": "desculpe, não consegui entender sua pergunta com confiança suficiente (confiança: 0.0). posso ajudar com: configuração de wi-fi, redefinição de senhas, problemas com impressora ou configuração de email. pode reformular sua pergunta ou ser mais específico?",
+        "type_correct": false,
+        "keywords_score": 0.3333333333333333,
+        "confidence": 0.0,
+        "passed": false
+      },
+      {
+        "test_name": "Configuração de Email",
+        "input": "Como configurar email?",
+        "response": "desculpe, não consegui entender sua pergunta com confiança suficiente (confiança: 0.0). posso ajudar com: configuração de wi-fi, redefinição de senhas, problemas com impressora ou configuração de email. pode reformular sua pergunta ou ser mais específico?",
+        "type_correct": false,
+        "keywords_score": 0.3333333333333333,
+        "confidence": 0.0,
+        "passed": false
+      },
+      {
+        "test_name": "Despedida",
+        "input": "Obrigado, tchau",
+        "response": "obrigado por usar nosso suporte! tenha um ótimo dia!",
+        "type_correct": true,
+        "keywords_score": 1.0,
+        "confidence": 3.0,
+        "passed": true
+      }
+    ],
+    "pass_rate": 0.6666666666666666
+  },
+  "diagnostic_system": {
+    "test_type": "diagnostic_system",
+    "results": [
+      {
+        "test_name": "Diagnóstico Wi-Fi Completo",
+        "diagnostic_started": true,
+        "solution_provided": true,
+        "final_response": "Baseado nas suas respostas, recomendo:\n\nProblema pode ser no roteador. Reinicie o roteador.",
+        "passed": true
+      }
+    ],
+    "pass_rate": 1.0
+  },
+  "nlp_capabilities": {
+    "test_type": "nlp_capabilities",
+    "results": [
+      {
+        "test_name": "Variações Wi-Fi",
+        "individual_results": [
+          {
+            "input": "Como configurar wifi?",
+            "response_type": "solution",
+            "topic": "wifi",
+            "confidence": 2.0,
+            "correct": true
+          },
+          {
+            "input": "Configuração de wi-fi",
+            "response_type": "solution",
+            "topic": "wifi",
+            "confidence": 2.3333333333333335,
+            "correct": true
+          },
+          {
+            "input": "Ajuda com internet",
+            "response_type": "unknown",
+            "topic": null,
+            "confidence": 0.0,
+            "correct": false
+          },
+          {
+            "input": "Conectar na rede wireless",
+            "response_type": "solution",
+            "topic": "wifi",
+            "confidence": 3.0,
+            "correct": true
+          }
+        ],
+        "pass_rate": 0.75,
+        "passed": true
+      },
+      {
+        "test_name": "Variações Senha",
+        "individual_results": [
+          {
+            "input": "Perdi minha senha",
+            "response_type": "solution",
+            "topic": "senha",
+            "confidence": 2.5,
+            "correct": true
+          },
+          {
+            "input": "Não lembro da password",
+            "response_type": "unknown",
+            "topic": null,
+            "confidence": 0.0,
+            "correct": false
+          },
+          {
+            "input": "Resetar senha",
+            "response_type": "solution",
+            "topic": "senha",
+            "confidence": 3.0,
+            "correct": true
+          },
+          {
+            "input": "Como recuperar acesso?",
+            "response_type": "solution",
+            "topic": "senha",
+            "confidence": 2.5,
+            "correct": true
+          }
+        ],
+        "pass_rate": 0.75,
+        "passed": true
+      },
+      {
+        "test_name": "Linguagem Informal",
+        "individual_results": [
+          {
+            "input": "Oi, tudo bem?",
+            "response_type": "greeting",
+            "topic": null,
+            "confidence": 3.0,
+            "correct": true
+          },
+          {
+            "input": "E aí!",
+            "response_type": "unknown",
+            "topic": null,
+            "confidence": 0.0,
+            "correct": false
+          },
+          {
+            "input": "Olá, como vai?",
+            "response_type": "greeting",
+            "topic": null,
+            "confidence": 3.0,
+            "correct": true
+          },
+          {
+            "input": "Bom dia!",
+            "response_type": "unknown",
+            "topic": null,
+            "confidence": 0.0,
+            "correct": false
+          }
+        ],
+        "pass_rate": 0.5,
+        "passed": false
+      }
+    ],
+    "pass_rate": 0.6666666666666666
+  },
+  "performance": {
+    "test_type": "performance",
+    "avg_response_time": 0.00240478515625,
+    "max_response_time": 0.0028336048126220703,
+    "min_response_time": 0.0021893978118896484,
+    "performance_good": true,
+    "passed": true
+  },
+  "edge_cases": {
+    "test_type": "edge_cases",
+    "results": [
+      {
+        "test_name": "Mensagem Vazia",
+        "input": "",
+        "handled_gracefully": "2. Outros dispositivos conseguem conectar na mesma rede?",
+        "response": "2. Outros dispositivos conseguem conectar na mesma rede?",
+        "passed": "2. Outros dispositivos conseguem conectar na mesma rede?"
+      },
+      {
+        "test_name": "Mensagem Muito Longa",
+        "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "handled_gracefully": "3. A senha está correta?",
+        "response": "3. A senha está correta?",
+        "passed": "3. A senha está correta?"
+      },
+      {
+        "test_name": "Caracteres Especiais",
+        "input": "!@#$%^&*()",
+        "handled_gracefully": "4. O Wi-Fi está habilitado no dispositivo?",
+        "response": "4. O Wi-Fi está habilitado no dispositivo?",
+        "passed": "4. O Wi-Fi está habilitado no dispositivo?"
+      },
+      {
+        "test_name": "Pergunta Ambígua",
+        "input": "Não funciona",
+        "handled_gracefully": "Baseado nas suas respostas, recomendo:\n\nProblema pode ser no roteador. Reinicie o roteador.",
+        "response": "Baseado nas suas respostas, recomendo:\n\nProblema pode ser no roteador. Reinicie o roteador.",
+        "passed": "Baseado nas suas respostas, recomendo:\n\nProblema pode ser no roteador. Reinicie o roteador."
+      },
+      {
+        "test_name": "Idioma Estrangeiro",
+        "input": "Hello, how are you?",
+        "handled_gracefully": "Olá! Sou seu assistente de suporte técnico com IA avançada. Como posso ajudá-lo hoje?",
+        "response": "Olá! Sou seu assistente de suporte técnico com IA avançada. Como posso ajudá-lo hoje?",
+        "passed": "Olá! Sou seu assistente de suporte técnico com IA avançada. Como posso ajudá-lo hoje?"
+      }
+    ],
+    "pass_rate": 1.0
+  },
+  "summary": {
+    "total_tests": 15,
+    "passed_tests": 12,
+    "overall_pass_rate": 0.8,
+    "timestamp": "2025-08-16 11:45:06"
+  }
+}
