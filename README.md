@@ -1,0 +1,1 @@
+Este é um repositório para desenvolvimento de um chatbot para o projeto da matéria INTRODUÇÃO A INTELIGÊNCIA ARTIFICIAL.
