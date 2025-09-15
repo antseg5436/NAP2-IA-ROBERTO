@@ -1,8 +1,3 @@
-"""
-Módulo de IA avançada para chatbot de suporte técnico
-Inclui PLN aprimorada, inferência lógica e fluxos interativos para todas as categorias
-"""
-
 import re
 from typing import Dict, List, Tuple, Optional
 from difflib import SequenceMatcher
@@ -21,8 +16,6 @@ class AdvancedNLPEngine:
         
         # Sinônimos expandidos para melhor reconhecimento
         self.synonyms = {
-            'wifi': ['wifi', 'wi-fi', 'internet', 'rede', 'conexao', 'conectar', 'wireless', 'sem fio', 'roteador', 
-                    'modem', 'router', 'sinal', 'banda larga', 'broadband', 'net', 'web', 'online'],
             'internet': ['internet', 'net', 'web', 'online', 'conexao', 'conectar', 'rede', 'banda larga'],
             'senha': ['senha', 'password', 'pass', 'credencial', 'login', 'acesso', 'autenticacao', 'usuario',
                      'logon', 'entrar', 'acessar', 'logar', 'autenticar'],
@@ -40,13 +33,6 @@ class AdvancedNLPEngine:
         
         # Frases completas para cada categoria
         self.phrase_patterns = {
-            'wifi': [
-                'como configurar wifi', 'nao consigo conectar na internet', 'wifi nao funciona',
-                'problema com internet', 'rede sem fio', 'configurar roteador', 'senha do wifi',
-                'internet lenta', 'sinal fraco', 'nao conecta no wifi', 'wifi desconectando',
-                'minha internet nao funciona', 'roteador com problemas', 'modem nao liga',
-                'sem acesso a internet', 'conexao instavel', 'wifi cai toda hora'
-            ],
             'senha': [
                 'esqueci minha senha', 'como resetar senha', 'recuperar senha', 'nao lembro a senha',
                 'perdi minha senha', 'redefinir password', 'problema de login', 'nao consigo entrar',
@@ -185,7 +171,7 @@ class AdvancedNLPEngine:
         # Se não encontrou correspondência boa com frases, tentar com sinônimos
         if best_score < 1.5:
             for intent, synonyms in self.synonyms.items():
-                if intent in ['wifi', 'senha', 'impressora', 'email']:
+                if intent in ['senha', 'impressora', 'email']:
                     synonym_tokens = synonyms
                     similarity = self.calculate_similarity(tokens, synonym_tokens)
                     
@@ -207,21 +193,7 @@ class LogicalInferenceEngine:
             'password_recovery': {
                 'steps': {
                     'start': {
-                        'message': "Olá! Vejo que você selecionou a opção 'Senha'. Quer recuperar o acesso à sua conta?",
-                        'expected_responses': {
-                            'sim': 'access_login',
-                            'yes': 'access_login',
-                            'claro': 'access_login',
-                            'quero': 'access_login',
-                            'preciso': 'access_login',
-                            'nao': 'different_problem',
-                            'não': 'different_problem',
-                            'no': 'different_problem'
-                        },
-                        'fallback_message': "Não entendi sua resposta. Você quer recuperar o acesso à sua conta? Responda 'sim' ou 'não'."
-                    },
-                    'access_login': {
-                        'message': "Certo, vou te ajudar 👍\nPrimeiro passo: acesse a página de login do sistema.\nConseguiu chegar lá?",
+                        'message': "Olá! Vejo que você selecionou a opção 'Senha'. Para te ajudar a redefinir sua senha, por favor, acesse a página de login do sistema. Conseguiu chegar lá?",
                         'expected_responses': {
                             'sim': 'click_forgot',
                             'yes': 'click_forgot',
@@ -229,24 +201,24 @@ class LogicalInferenceEngine:
                             'ok': 'click_forgot',
                             'nao': 'help_find_login',
                             'não': 'help_find_login',
-                            'no': 'help_find_login'
-                        },
-                        'fallback_message': "Você conseguiu acessar a página de login? Responda 'sim' se conseguiu ou 'não' se precisa de ajuda para encontrá-la."
+                            'no': 'help_find_login',
+                            'nao sei': 'help_find_login'
+                        }
                     },
                     'help_find_login': {
-                        'message': "Sem problemas! Para encontrar a página de login:\n1. Abra seu navegador\n2. Digite o endereço do site/sistema\n3. Procure por 'Login', 'Entrar' ou 'Acesso'\n\nConseguiu encontrar agora?",
+                        'message': "Sem problemas! Para encontrar a página de login:\n1. Abra seu navegador.\n2. Digite o endereço do site ou sistema.\n3. Procure por 'Login', 'Entrar' ou 'Acesso'.\n\nMe diga quando conseguir. Conseguiu encontrar agora?",
                         'expected_responses': {
                             'sim': 'click_forgot',
                             'yes': 'click_forgot',
                             'consegui': 'click_forgot',
+                            'ok': 'click_forgot',
                             'nao': 'escalate_support',
                             'não': 'escalate_support',
                             'no': 'escalate_support'
-                        },
-                        'fallback_message': "Conseguiu encontrar a página de login agora? Responda 'sim' ou 'não'."
+                        }
                     },
                     'click_forgot': {
-                        'message': "Ótimo! Agora clique em 'Esqueci minha senha'.\nEstá vendo essa opção?",
+                        'message': "Ótimo! Agora na página de login, clique em 'Esqueci minha senha'. Você está vendo essa opção?",
                         'expected_responses': {
                             'sim': 'enter_email',
                             'yes': 'enter_email',
@@ -256,23 +228,22 @@ class LogicalInferenceEngine:
                             'nao': 'help_find_forgot',
                             'não': 'help_find_forgot',
                             'no': 'help_find_forgot'
-                        },
-                        'fallback_message': "Você está vendo a opção 'Esqueci minha senha'? Responda 'sim' se vê ou 'não' se não encontra."
+                        }
                     },
                     'help_find_forgot': {
-                        'message': "A opção pode estar com nomes como:\n• 'Esqueci minha senha'\n• 'Recuperar senha'\n• 'Forgot password'\n• 'Reset password'\n\nGeralmente fica abaixo dos campos de login. Encontrou?",
+                        'message': "A opção pode estar com nomes como 'Recuperar senha', 'Redefinir password' ou 'Forgot password'. Geralmente fica abaixo dos campos de login. Encontrou?",
                         'expected_responses': {
                             'sim': 'enter_email',
                             'yes': 'enter_email',
                             'encontrei': 'enter_email',
+                            'achei': 'enter_email',
                             'nao': 'escalate_support',
                             'não': 'escalate_support',
                             'no': 'escalate_support'
-                        },
-                        'fallback_message': "Conseguiu encontrar a opção para recuperar senha? Responda 'sim' ou 'não'."
+                        }
                     },
                     'enter_email': {
-                        'message': "Perfeito 👌\nAgora digite o seu e-mail cadastrado e clique em enviar.",
+                        'message': "Perfeito. Agora digite o seu e-mail cadastrado e clique em 'enviar' ou 'continuar'. Você já fez isso?",
                         'expected_responses': {
                             'sim': 'check_email',
                             'yes': 'check_email',
@@ -281,11 +252,10 @@ class LogicalInferenceEngine:
                             'ja fiz': 'check_email',
                             'digitei': 'check_email',
                             'enviei': 'check_email'
-                        },
-                        'fallback_message': "Você já digitou seu e-mail e clicou em enviar? Responda quando tiver feito isso."
+                        }
                     },
                     'check_email': {
-                        'message': "Beleza! Em alguns instantes você deve receber um e-mail com um link para redefinir sua senha.\nPode verificar na sua caixa de entrada (ou na pasta de spam, caso não apareça logo)?",
+                        'message': "Beleza! Em alguns instantes você deve receber um e-mail com um link para redefinir sua senha. Pode verificar na sua caixa de entrada, ou na pasta de spam, caso não apareça logo? Me diga se o e-mail chegou.",
                         'expected_responses': {
                             'sim': 'click_link',
                             'yes': 'click_link',
@@ -295,23 +265,22 @@ class LogicalInferenceEngine:
                             'não': 'email_troubleshoot',
                             'no': 'email_troubleshoot',
                             'nao chegou': 'email_troubleshoot'
-                        },
-                        'fallback_message': "Você recebeu o e-mail de recuperação? Responda 'sim' se recebeu ou 'não' se ainda não chegou."
+                        }
                     },
                     'email_troubleshoot': {
-                        'message': "Sem problemas! Vamos verificar:\n1. Confira a pasta de spam/lixo eletrônico\n2. Aguarde mais alguns minutos (pode demorar até 10 min)\n3. Verifique se digitou o e-mail correto\n\nO e-mail chegou agora?",
+                        'message': "Sem problemas! Vamos verificar algumas coisas:\n1. Confira a pasta de spam/lixo eletrônico.\n2. Aguarde mais alguns minutos (pode demorar até 10 min).\n3. Verifique se digitou o e-mail correto.\n\nO e-mail chegou agora?",
                         'expected_responses': {
                             'sim': 'click_link',
                             'yes': 'click_link',
                             'recebi': 'click_link',
+                            'chegou': 'click_link',
                             'nao': 'escalate_support',
                             'não': 'escalate_support',
                             'no': 'escalate_support'
-                        },
-                        'fallback_message': "O e-mail de recuperação chegou? Responda 'sim' ou 'não'."
+                        }
                     },
                     'click_link': {
-                        'message': "Maravilha 🎉\nClique no link e escolha uma nova senha.\nDica: use uma senha com pelo menos 8 caracteres, incluindo números e letras para ficar mais segura.",
+                        'message': "Maravilha! Agora clique no link que você recebeu e siga as instruções para escolher uma nova senha. Depois de redefinir, me avise.",
                         'expected_responses': {
                             'sim': 'test_login',
                             'yes': 'test_login',
@@ -319,11 +288,10 @@ class LogicalInferenceEngine:
                             'feito': 'test_login',
                             'redefinida': 'test_login',
                             'alterada': 'test_login'
-                        },
-                        'fallback_message': "Você já redefiniu sua senha? Responda quando tiver criado a nova senha."
+                        }
                     },
                     'test_login': {
-                        'message': "Perfeito! 🚀\nAgora tente fazer login novamente com a nova senha. Conseguiu acessar sua conta?",
+                        'message': "Perfeito! Agora tente fazer login novamente com a nova senha. Conseguiu acessar sua conta?",
                         'expected_responses': {
                             'sim': 'success',
                             'yes': 'success',
@@ -333,11 +301,10 @@ class LogicalInferenceEngine:
                             'nao': 'login_troubleshoot',
                             'não': 'login_troubleshoot',
                             'no': 'login_troubleshoot'
-                        },
-                        'fallback_message': "Conseguiu fazer login com a nova senha? Responda 'sim' ou 'não'."
+                        }
                     },
                     'login_troubleshoot': {
-                        'message': "Vamos verificar:\n1. Certifique-se de que está digitando a senha correta\n2. Verifique se o Caps Lock não está ativado\n3. Tente copiar e colar a senha\n\nFuncionou agora?",
+                        'message': "Vamos verificar:\n1. Certifique-se de que está digitando a senha correta.\n2. Verifique se a tecla Caps Lock não está ativada.\n3. Tente copiar e colar a senha do e-mail de redefinição.\n\nFuncionou agora?",
                         'expected_responses': {
                             'sim': 'success',
                             'yes': 'success',
@@ -345,423 +312,65 @@ class LogicalInferenceEngine:
                             'nao': 'escalate_support',
                             'não': 'escalate_support',
                             'no': 'escalate_support'
-                        },
-                        'fallback_message': "Conseguiu fazer login agora? Responda 'sim' ou 'não'."
-                    },
-                    'different_problem': {
-                        'message': "Entendi. Qual é o problema específico com sua senha?\n• Esqueci a senha\n• A senha não funciona\n• Conta bloqueada\n• Outro problema",
-                        'expected_responses': {
-                            'esqueci': 'access_login',
-                            'nao funciona': 'login_troubleshoot',
-                            'bloqueada': 'escalate_support',
-                            'outro': 'escalate_support'
-                        },
-                        'fallback_message': "Pode me dizer qual é o problema específico com sua senha?"
+                        }
                     },
                     'escalate_support': {
-                        'message': "Entendo que precisa de uma ajuda mais específica. Vou te conectar com um atendente humano que poderá ajudar melhor com seu caso.\n\nEnquanto isso, você pode tentar:\n• Entrar em contato com o suporte técnico\n• Verificar se há atualizações do sistema\n• Tentar em outro navegador",
-                        'expected_responses': {},
-                        'solution': "Caso escalado para suporte humano. Orientações básicas fornecidas."
+                        'message': "Entendo que precisa de uma ajuda mais específica. Vou te conectar com um atendente humano que poderá ajudar melhor com seu caso. Enquanto isso, você pode tentar reiniciar o seu navegador. Posso te ajudar com mais alguma coisa?",
+                        'expected_responses': {
+                            'sim': 'flow_continue',
+                            'yes': 'flow_continue',
+                            'nao': 'flow_exit',
+                            'não': 'flow_exit',
+                            'no': 'flow_exit'
+                        }
                     },
                     'success': {
-                        'message': "Excelente! 🎊 Sua senha foi redefinida com sucesso e você conseguiu acessar sua conta.\n\nPosso ajudar com mais alguma coisa?",
+                        'message': "Excelente! Sua senha foi redefinida com sucesso e você conseguiu acessar sua conta. Posso te ajudar com mais alguma coisa?",
+                        'expected_responses': {
+                            'sim': 'flow_continue',
+                            'yes': 'flow_continue',
+                            'nao': 'flow_exit',
+                            'não': 'flow_exit',
+                            'no': 'flow_exit'
+                        }
+                    },
+                    'flow_continue': {
+                        'message': "Ótimo! Posso ajudar com:\n\n- Problemas com impressora\n- Configuração de e-mail",
+                        'expected_responses': {
+                            'impressora': 'printer_troubleshooting',
+                            'email': 'email_configuration',
+                            'nao': 'flow_exit',
+                            'não': 'flow_exit',
+                        },
+                        'solution': "Oferecendo menu principal."
+                    },
+                    'flow_exit': {
+                        'message': "Foi um prazer ajudar! Tenha um ótimo dia. 😊",
                         'expected_responses': {},
-                        'solution': "Senha redefinida com sucesso. Usuário conseguiu acessar a conta."
+                        'solution': "O usuário optou por sair do fluxo de recuperação de senha."
                     }
                 }
             },
-            
-            'wifi_troubleshooting': {
-                'steps': {
-                    'start': {
-                        'message': "Olá! Vejo que você está com problemas de Wi-Fi. Vamos resolver isso juntos! 📶\n\nPrimeiro, me diga: você consegue ver sua rede Wi-Fi na lista de redes disponíveis?",
-                        'expected_responses': {
-                            'sim': 'check_password',
-                            'yes': 'check_password',
-                            'vejo': 'check_password',
-                            'aparece': 'check_password',
-                            'nao': 'check_router',
-                            'não': 'check_router',
-                            'no': 'check_router',
-                            'nao aparece': 'check_router'
-                        },
-                        'fallback_message': "Você consegue ver sua rede Wi-Fi na lista de redes disponíveis do seu dispositivo? Responda 'sim' ou 'não'."
-                    },
-                    'check_password': {
-                        'message': "Ótimo! A rede aparece na lista. Quando você tenta conectar, o que acontece?\n\n• Pede senha e não conecta\n• Conecta mas não navega\n• Fica tentando conectar\n• Outro problema",
-                        'expected_responses': {
-                            'senha': 'wrong_password',
-                            'pede senha': 'wrong_password',
-                            'nao conecta': 'wrong_password',
-                            'conecta': 'connected_no_internet',
-                            'navega': 'connected_no_internet',
-                            'internet': 'connected_no_internet',
-                            'tentando': 'connection_timeout',
-                            'outro': 'other_wifi_problem'
-                        },
-                        'fallback_message': "O que acontece quando você tenta conectar na rede Wi-Fi? Pode descrever o problema?"
-                    },
-                    'wrong_password': {
-                        'message': "Parece ser um problema de senha. Vamos verificar:\n\n1. A senha do Wi-Fi geralmente está na etiqueta do roteador\n2. Pode estar escrita como 'Password', 'Key', 'WPA' ou 'Senha'\n3. Cuidado com letras maiúsculas e minúsculas\n\nVocê tem acesso ao roteador para verificar a senha?",
-                        'expected_responses': {
-                            'sim': 'check_router_label',
-                            'yes': 'check_router_label',
-                            'tenho': 'check_router_label',
-                            'nao': 'ask_admin',
-                            'não': 'ask_admin',
-                            'no': 'ask_admin'
-                        },
-                        'fallback_message': "Você tem acesso físico ao roteador para verificar a senha na etiqueta? Responda 'sim' ou 'não'."
-                    },
-                    'check_router_label': {
-                        'message': "Perfeito! Procure na parte de trás ou embaixo do roteador por uma etiqueta com:\n• Password\n• WPA Key\n• Senha Wi-Fi\n• Network Key\n\nEncontrou a senha na etiqueta?",
-                        'expected_responses': {
-                            'sim': 'try_new_password',
-                            'yes': 'try_new_password',
-                            'encontrei': 'try_new_password',
-                            'achei': 'try_new_password',
-                            'nao': 'reset_router_option',
-                            'não': 'reset_router_option',
-                            'no': 'reset_router_option'
-                        },
-                        'fallback_message': "Conseguiu encontrar a senha na etiqueta do roteador? Responda 'sim' ou 'não'."
-                    },
-                    'try_new_password': {
-                        'message': "Ótimo! Agora:\n1. Vá nas configurações de Wi-Fi do seu dispositivo\n2. Clique na sua rede\n3. Digite a senha exatamente como está na etiqueta\n4. Tente conectar\n\nConseguiu conectar?",
-                        'expected_responses': {
-                            'sim': 'test_internet',
-                            'yes': 'test_internet',
-                            'conectou': 'test_internet',
-                            'funcionou': 'test_internet',
-                            'nao': 'password_troubleshoot',
-                            'não': 'password_troubleshoot',
-                            'no': 'password_troubleshoot'
-                        },
-                        'fallback_message': "Conseguiu conectar na rede Wi-Fi com a senha da etiqueta? Responda 'sim' ou 'não'."
-                    },
-                    'password_troubleshoot': {
-                        'message': "Vamos tentar algumas coisas:\n1. Verifique se não há espaços antes ou depois da senha\n2. Confirme maiúsculas e minúsculas\n3. Alguns caracteres podem ser confusos (0 vs O, 1 vs l)\n\nTente novamente. Funcionou?",
-                        'expected_responses': {
-                            'sim': 'test_internet',
-                            'yes': 'test_internet',
-                            'funcionou': 'test_internet',
-                            'nao': 'reset_router_option',
-                            'não': 'reset_router_option',
-                            'no': 'reset_router_option'
-                        },
-                        'fallback_message': "Conseguiu conectar agora? Responda 'sim' ou 'não'."
-                    },
-                    'ask_admin': {
-                        'message': "Sem problemas! Você precisa perguntar a senha para:\n• Quem configurou o Wi-Fi\n• Administrador da rede\n• Responsável pela internet\n\nOu posso te ajudar a resetar o roteador (isso vai criar uma nova senha). O que prefere?",
-                        'expected_responses': {
-                            'perguntar': 'wait_password',
-                            'admin': 'wait_password',
-                            'resetar': 'reset_router_option',
-                            'reset': 'reset_router_option',
-                            'nova senha': 'reset_router_option'
-                        },
-                        'fallback_message': "Você vai perguntar a senha para alguém ou prefere resetar o roteador?"
-                    },
-                    'wait_password': {
-                        'message': "Perfeito! Quando conseguir a senha, volte aqui que eu te ajudo a conectar.\n\nEnquanto isso, você pode:\n• Anotar a senha corretamente\n• Verificar se o dispositivo está próximo do roteador\n• Reiniciar o Wi-Fi do seu dispositivo\n\nConseguiu a senha?",
-                        'expected_responses': {
-                            'sim': 'try_new_password',
-                            'yes': 'try_new_password',
-                            'consegui': 'try_new_password',
-                            'nao': 'escalate_support',
-                            'não': 'escalate_support',
-                            'no': 'escalate_support'
-                        },
-                        'fallback_message': "Conseguiu a senha do Wi-Fi? Responda 'sim' quando tiver ou 'não' se precisar de outra solução."
-                    },
-                    'check_router': {
-                        'message': "A rede não aparece na lista. Vamos verificar o roteador:\n\n1. O roteador está ligado? (luzes acesas)\n2. Os cabos estão bem conectados?\n3. Há energia elétrica?\n\nO roteador está ligado e com luzes acesas?",
-                        'expected_responses': {
-                            'sim': 'restart_router',
-                            'yes': 'restart_router',
-                            'ligado': 'restart_router',
-                            'luzes': 'restart_router',
-                            'nao': 'power_check',
-                            'não': 'power_check',
-                            'no': 'power_check',
-                            'desligado': 'power_check'
-                        },
-                        'fallback_message': "O roteador está ligado com luzes acesas? Responda 'sim' ou 'não'."
-                    },
-                    'power_check': {
-                        'message': "Vamos verificar a alimentação:\n1. O cabo de energia está conectado?\n2. A tomada está funcionando?\n3. O botão liga/desliga está acionado?\n\nTente ligar o roteador. Acendeu alguma luz?",
-                        'expected_responses': {
-                            'sim': 'restart_router',
-                            'yes': 'restart_router',
-                            'acendeu': 'restart_router',
-                            'ligou': 'restart_router',
-                            'nao': 'power_troubleshoot',
-                            'não': 'power_troubleshoot',
-                            'no': 'power_troubleshoot'
-                        },
-                        'fallback_message': "O roteador ligou e acendeu alguma luz? Responda 'sim' ou 'não'."
-                    },
-                    'power_troubleshoot': {
-                        'message': "Problema de energia. Vamos resolver:\n1. Teste a tomada com outro aparelho\n2. Verifique se o cabo não está danificado\n3. Procure o botão liga/desliga no roteador\n\nSe nada funcionar, pode ser problema no roteador. Conseguiu ligar?",
-                        'expected_responses': {
-                            'sim': 'restart_router',
-                            'yes': 'restart_router',
-                            'funcionou': 'restart_router',
-                            'nao': 'escalate_support',
-                            'não': 'escalate_support',
-                            'no': 'escalate_support'
-                        },
-                        'fallback_message': "Conseguiu ligar o roteador? Responda 'sim' ou 'não'."
-                    },
-                    'restart_router': {
-                        'message': "Ótimo! Agora vamos reiniciar o roteador:\n1. Desligue o roteador da tomada\n2. Aguarde 30 segundos\n3. Ligue novamente\n4. Aguarde 2-3 minutos para estabilizar\n\nFez o reinício? As luzes estabilizaram?",
-                        'expected_responses': {
-                            'sim': 'check_network_again',
-                            'yes': 'check_network_again',
-                            'reiniciei': 'check_network_again',
-                            'estabilizou': 'check_network_again',
-                            'nao': 'wait_longer',
-                            'não': 'wait_longer',
-                            'no': 'wait_longer'
-                        },
-                        'fallback_message': "Você reiniciou o roteador e as luzes estabilizaram? Responda 'sim' ou 'não'."
-                    },
-                    'wait_longer': {
-                        'message': "Sem pressa! O roteador pode demorar até 5 minutos para estabilizar completamente.\n\nEnquanto aguarda, verifique se:\n• A luz de energia está fixa (não piscando)\n• A luz de internet está acesa\n• A luz de Wi-Fi está ativa\n\nAgora as luzes estão estáveis?",
-                        'expected_responses': {
-                            'sim': 'check_network_again',
-                            'yes': 'check_network_again',
-                            'estaveis': 'check_network_again',
-                            'nao': 'escalate_support',
-                            'não': 'escalate_support',
-                            'no': 'escalate_support'
-                        },
-                        'fallback_message': "As luzes do roteador estão estáveis agora? Responda 'sim' ou 'não'."
-                    },
-                    'check_network_again': {
-                        'message': "Perfeito! Agora vamos verificar se a rede apareceu:\n1. Vá nas configurações de Wi-Fi do seu dispositivo\n2. Atualize a lista de redes\n3. Procure pelo nome da sua rede\n\nSua rede Wi-Fi aparece na lista agora?",
-                        'expected_responses': {
-                            'sim': 'check_password',
-                            'yes': 'check_password',
-                            'aparece': 'check_password',
-                            'vejo': 'check_password',
-                            'nao': 'network_name_help',
-                            'não': 'network_name_help',
-                            'no': 'network_name_help'
-                        },
-                        'fallback_message': "Sua rede Wi-Fi aparece na lista agora? Responda 'sim' ou 'não'."
-                    },
-                    'network_name_help': {
-                        'message': "Vamos encontrar sua rede:\n• O nome pode estar na etiqueta do roteador\n• Procure por 'SSID', 'Network Name' ou 'Nome da Rede'\n• Pode ser algo como 'NET_2G', 'Vivo-Fibra', etc.\n\nQual nome você vê na etiqueta do roteador?",
-                        'expected_responses': {
-                            'encontrei': 'try_connect_network',
-                            'achei': 'try_connect_network',
-                            'vejo': 'try_connect_network',
-                            'nao tem': 'escalate_support',
-                            'não tem': 'escalate_support',
-                            'no': 'escalate_support'
-                        },
-                        'fallback_message': "Conseguiu encontrar o nome da rede na etiqueta? Responda com o nome ou 'não tem' se não encontrar."
-                    },
-                    'try_connect_network': {
-                        'message': "Ótimo! Agora:\n1. Procure esse nome na lista de redes Wi-Fi\n2. Clique nele para conectar\n3. Digite a senha (também na etiqueta)\n\nConseguiu conectar?",
-                        'expected_responses': {
-                            'sim': 'test_internet',
-                            'yes': 'test_internet',
-                            'conectou': 'test_internet',
-                            'nao': 'final_troubleshoot',
-                            'não': 'final_troubleshoot',
-                            'no': 'final_troubleshoot'
-                        },
-                        'fallback_message': "Conseguiu conectar na rede Wi-Fi? Responda 'sim' ou 'não'."
-                    },
-                    'connected_no_internet': {
-                        'message': "Você está conectado ao Wi-Fi mas sem internet. Vamos resolver:\n\n1. Teste abrir um site (google.com)\n2. Reinicie o navegador\n3. Verifique se outros dispositivos têm internet\n\nOutros dispositivos (celular, TV) têm internet na mesma rede?",
-                        'expected_responses': {
-                            'sim': 'device_problem',
-                            'yes': 'device_problem',
-                            'tem': 'device_problem',
-                            'funcionam': 'device_problem',
-                            'nao': 'internet_provider_issue',
-                            'não': 'internet_provider_issue',
-                            'no': 'internet_provider_issue'
-                        },
-                        'fallback_message': "Outros dispositivos têm internet na mesma rede Wi-Fi? Responda 'sim' ou 'não'."
-                    },
-                    'device_problem': {
-                        'message': "O problema é específico do seu dispositivo. Vamos resolver:\n1. Esqueça a rede Wi-Fi e conecte novamente\n2. Reinicie seu dispositivo\n3. Verifique se há atualizações pendentes\n\nTente essas soluções. Funcionou?",
-                        'expected_responses': {
-                            'sim': 'success',
-                            'yes': 'success',
-                            'funcionou': 'success',
-                            'nao': 'escalate_support',
-                            'não': 'escalate_support',
-                            'no': 'escalate_support'
-                        },
-                        'fallback_message': "As soluções funcionaram? Responda 'sim' ou 'não'."
-                    },
-                    'internet_provider_issue': {
-                        'message': "Parece ser um problema com seu provedor de internet. Vamos verificar:\n1. Reinicie o modem (se for separado do roteador)\n2. Verifique se há manutenção na região\n3. Entre em contato com seu provedor\n\nO reinício do modem resolveu?",
-                        'expected_responses': {
-                            'sim': 'success',
-                            'yes': 'success',
-                            'funcionou': 'success',
-                            'nao': 'contact_provider',
-                            'não': 'contact_provider',
-                            'no': 'contact_provider'
-                        },
-                        'fallback_message': "O reinício do modem resolveu o problema? Responda 'sim' ou 'não'."
-                    },
-                    'contact_provider': {
-                        'message': "Você precisa entrar em contato com seu provedor de internet:\n• Informe que está sem internet\n• Mencione que já reiniciou os equipamentos\n• Pergunte sobre manutenções na região\n\nO número geralmente está na conta ou no roteador.",
-                        'expected_responses': {},
-                        'solution': "Problema de provedor de internet. Usuário orientado a entrar em contato."
-                    },
-                    'connection_timeout': {
-                        'message': "O dispositivo fica tentando conectar. Isso pode ser:\n• Senha incorreta\n• Sinal fraco\n• Problema no roteador\n\nVocê está próximo do roteador (mesma sala)?",
-                        'expected_responses': {
-                            'sim': 'wrong_password',
-                            'yes': 'wrong_password',
-                            'proximo': 'wrong_password',
-                            'nao': 'signal_strength',
-                            'não': 'signal_strength',
-                            'no': 'signal_strength',
-                            'longe': 'signal_strength'
-                        },
-                        'fallback_message': "Você está próximo do roteador? Responda 'sim' ou 'não'."
-                    },
-                    'signal_strength': {
-                        'message': "O sinal pode estar fraco. Vamos melhorar:\n1. Aproxime-se do roteador\n2. Remova obstáculos (paredes, móveis)\n3. Verifique se há interferências (micro-ondas, outros roteadores)\n\nTente conectar mais próximo do roteador. Funcionou?",
-                        'expected_responses': {
-                            'sim': 'test_internet',
-                            'yes': 'test_internet',
-                            'funcionou': 'test_internet',
-                            'nao': 'wrong_password',
-                            'não': 'wrong_password',
-                            'no': 'wrong_password'
-                        },
-                        'fallback_message': "Conseguiu conectar mais próximo do roteador? Responda 'sim' ou 'não'."
-                    },
-                    'test_internet': {
-                        'message': "Excelente! Você está conectado. Vamos testar a internet:\n1. Abra um navegador\n2. Acesse google.com ou youtube.com\n3. Teste a velocidade\n\nA internet está funcionando normalmente?",
-                        'expected_responses': {
-                            'sim': 'success',
-                            'yes': 'success',
-                            'funcionando': 'success',
-                            'normal': 'success',
-                            'lenta': 'speed_troubleshoot',
-                            'devagar': 'speed_troubleshoot',
-                            'nao': 'connected_no_internet',
-                            'não': 'connected_no_internet',
-                            'no': 'connected_no_internet'
-                        },
-                        'fallback_message': "A internet está funcionando? Responda 'sim', 'lenta' ou 'não'."
-                    },
-                    'speed_troubleshoot': {
-                        'message': "Internet lenta pode ter várias causas:\n1. Muitos dispositivos conectados\n2. Downloads em andamento\n3. Problema no provedor\n4. Roteador sobrecarregado\n\nTente reiniciar o roteador novamente. Melhorou a velocidade?",
-                        'expected_responses': {
-                            'sim': 'success',
-                            'yes': 'success',
-                            'melhorou': 'success',
-                            'nao': 'contact_provider',
-                            'não': 'contact_provider',
-                            'no': 'contact_provider'
-                        },
-                        'fallback_message': "A velocidade melhorou após reiniciar? Responda 'sim' ou 'não'."
-                    },
-                    'reset_router_option': {
-                        'message': "Podemos resetar o roteador para configurar uma nova senha:\n⚠️ ATENÇÃO: Isso vai apagar todas as configurações!\n\n1. Procure o botão 'Reset' no roteador\n2. Mantenha pressionado por 10 segundos\n3. Aguarde reiniciar\n\nQuer fazer o reset?",
-                        'expected_responses': {
-                            'sim': 'reset_instructions',
-                            'yes': 'reset_instructions',
-                            'quero': 'reset_instructions',
-                            'nao': 'escalate_support',
-                            'não': 'escalate_support',
-                            'no': 'escalate_support'
-                        },
-                        'fallback_message': "Quer fazer o reset do roteador? Responda 'sim' ou 'não'."
-                    },
-                    'reset_instructions': {
-                        'message': "Instruções para reset:\n1. Com o roteador ligado, encontre o botão 'Reset'\n2. Use um clipe ou palito para pressionar\n3. Mantenha pressionado por 10-15 segundos\n4. Solte e aguarde 2-3 minutos\n\nFez o reset? As luzes voltaram ao normal?",
-                        'expected_responses': {
-                            'sim': 'post_reset_config',
-                            'yes': 'post_reset_config',
-                            'fiz': 'post_reset_config',
-                            'nao': 'reset_help',
-                            'não': 'reset_help',
-                            'no': 'reset_help'
-                        },
-                        'fallback_message': "Conseguiu fazer o reset? Responda 'sim' ou 'não'."
-                    },
-                    'post_reset_config': {
-                        'message': "Perfeito! Após o reset, o roteador volta às configurações de fábrica.\n\nProcure na etiqueta por:\n• Nome padrão da rede (SSID)\n• Senha padrão\n\nGeralmente algo como 'admin', '12345678' ou está na etiqueta.\n\nConseguiu conectar com as configurações padrão?",
-                        'expected_responses': {
-                            'sim': 'success',
-                            'yes': 'success',
-                            'conectei': 'success',
-                            'nao': 'escalate_support',
-                            'não': 'escalate_support',
-                            'no': 'escalate_support'
-                        },
-                        'fallback_message': "Conseguiu conectar com as configurações padrão? Responda 'sim' ou 'não'."
-                    },
-                    'other_wifi_problem': {
-                        'message': "Pode me descrever melhor o problema? Por exemplo:\n• Mensagem de erro específica\n• O que acontece quando tenta conectar\n• Há quanto tempo não funciona\n\nIsso me ajudará a encontrar a melhor solução.",
-                        'expected_responses': {
-                            'erro': 'error_analysis',
-                            'mensagem': 'error_analysis',
-                            'nao conecta': 'connection_timeout',
-                            'lento': 'speed_troubleshoot',
-                            'cai': 'connection_drops'
-                        },
-                        'fallback_message': "Pode descrever melhor o problema com o Wi-Fi?"
-                    },
-                    'final_troubleshoot': {
-                        'message': "Vamos tentar as últimas soluções:\n1. Esqueça a rede e reconecte\n2. Reinicie seu dispositivo\n3. Verifique se há atualizações\n4. Teste com outro dispositivo\n\nAlguma dessas soluções funcionou?",
-                        'expected_responses': {
-                            'sim': 'success',
-                            'yes': 'success',
-                            'funcionou': 'success',
-                            'nao': 'escalate_support',
-                            'não': 'escalate_support',
-                            'no': 'escalate_support'
-                        },
-                        'fallback_message': "Alguma das soluções funcionou? Responda 'sim' ou 'não'."
-                    },
-                    'escalate_support': {
-                        'message': "Entendo que o problema é mais complexo. Vou te conectar com um técnico especializado.\n\nEnquanto aguarda:\n• Anote o modelo do seu roteador\n• Verifique se há luzes piscando\n• Teste com outros dispositivos\n\nUm técnico entrará em contato em breve.",
-                        'expected_responses': {},
-                        'solution': "Caso escalado para suporte técnico especializado."
-                    },
-                    'success': {
-                        'message': "Fantástico! 🎉 Seu Wi-Fi está funcionando perfeitamente!\n\nDicas para manter a conexão estável:\n• Mantenha o roteador em local ventilado\n• Reinicie mensalmente\n• Mantenha firmware atualizado\n\nPosso ajudar com mais alguma coisa?",
-                        'expected_responses': {},
-                        'solution': "Wi-Fi configurado e funcionando com sucesso."
-                    }
-                }
-            },
-            
             'printer_troubleshooting': {
                 'steps': {
                     'start': {
-                        'message': "Olá! Vejo que você está com problemas na impressora. Vamos resolver isso! 🖨️\n\nPrimeiro, me diga: qual é o problema específico?\n• Não imprime nada\n• Imprime com qualidade ruim\n• Papel atolado\n• Não reconhece a impressora\n• Outro problema",
+                        'message': "Olá! Vejo que você está com problemas na impressora. Vamos resolver isso. Primeiro, me diga: qual é o problema específico? Responda com a opção que melhor descreve o seu problema:\n\n- **Não imprime**\n- **Papel atolado**\n- **Qualidade ruim**\n- **Não reconhece a impressora**\n- **Outro problema**",
                         'expected_responses': {
                             'nao imprime': 'check_power',
                             'não imprime': 'check_power',
                             'nada': 'check_power',
-                            'qualidade': 'print_quality',
-                            'ruim': 'print_quality',
                             'papel': 'paper_jam',
                             'atolado': 'paper_jam',
+                            'qualidade': 'print_quality',
+                            'ruim': 'print_quality',
                             'nao reconhece': 'connection_issue',
                             'não reconhece': 'connection_issue',
                             'reconhece': 'connection_issue',
-                            'outro': 'other_printer_problem'
-                        },
-                        'fallback_message': "Qual é o problema específico com sua impressora? Pode escolher uma das opções ou descrever o problema."
+                            'outro': 'other_printer_problem',
+                        }
                     },
                     'check_power': {
-                        'message': "Vamos verificar o básico primeiro:\n\n1. A impressora está ligada? (luzes acesas)\n2. O cabo de energia está conectado?\n3. Há papel na bandeja?\n4. Há tinta/toner suficiente?\n\nA impressora está ligada com luzes acesas?",
+                        'message': "Vamos verificar o básico. A impressora está ligada? As luzes estão acesas?",
                         'expected_responses': {
                             'sim': 'check_connection',
                             'yes': 'check_connection',
@@ -770,47 +379,23 @@ class LogicalInferenceEngine:
                             'nao': 'power_troubleshoot',
                             'não': 'power_troubleshoot',
                             'no': 'power_troubleshoot',
-                            'desligada': 'power_troubleshoot'
-                        },
-                        'fallback_message': "A impressora está ligada com luzes acesas? Responda 'sim' ou 'não'."
+                            'desligada': 'power_troubleshoot',
+                        }
                     },
                     'power_troubleshoot': {
-                        'message': "Vamos ligar a impressora:\n1. Verifique se o cabo está bem conectado\n2. Teste a tomada com outro aparelho\n3. Procure o botão liga/desliga\n4. Pressione firmemente o botão\n\nConseguiu ligar a impressora?",
+                        'message': "Vamos ligar a impressora. Verifique se o cabo de energia está bem conectado e se a tomada está funcionando. Conseguiu ligar?",
                         'expected_responses': {
                             'sim': 'check_connection',
                             'yes': 'check_connection',
                             'ligou': 'check_connection',
                             'funcionou': 'check_connection',
-                            'nao': 'power_issue',
-                            'não': 'power_issue',
-                            'no': 'power_issue'
-                        },
-                        'fallback_message': "Conseguiu ligar a impressora? Responda 'sim' ou 'não'."
-                    },
-                    'power_issue': {
-                        'message': "Problema de energia na impressora:\n• Cabo de energia danificado\n• Problema na tomada\n• Defeito interno\n\nTeste com outro cabo de energia se tiver. Se não ligar, pode precisar de assistência técnica.\n\nVai tentar assistência técnica ou tem outro cabo para testar?",
-                        'expected_responses': {
-                            'assistencia': 'escalate_support',
-                            'tecnica': 'escalate_support',
-                            'cabo': 'test_cable',
-                            'outro': 'test_cable'
-                        },
-                        'fallback_message': "Vai procurar assistência técnica ou tem outro cabo para testar?"
-                    },
-                    'test_cable': {
-                        'message': "Ótimo! Teste com outro cabo de energia:\n1. Desligue a impressora\n2. Troque o cabo\n3. Conecte novamente\n4. Tente ligar\n\nFuncionou com o outro cabo?",
-                        'expected_responses': {
-                            'sim': 'check_connection',
-                            'yes': 'check_connection',
-                            'funcionou': 'check_connection',
                             'nao': 'escalate_support',
                             'não': 'escalate_support',
-                            'no': 'escalate_support'
-                        },
-                        'fallback_message': "A impressora ligou com o outro cabo? Responda 'sim' ou 'não'."
+                            'no': 'escalate_support',
+                        }
                     },
                     'check_connection': {
-                        'message': "Ótimo! A impressora está ligada. Agora vamos verificar a conexão:\n\nComo sua impressora está conectada?\n• Cabo USB\n• Wi-Fi\n• Cabo de rede (Ethernet)\n• Bluetooth",
+                        'message': "Ótimo! A impressora está ligada. Como ela está conectada ao seu computador? Responda com a opção:\n\n- **Cabo USB**\n- **Wi-Fi**\n- **Cabo de rede** (Ethernet)\n- **Bluetooth**",
                         'expected_responses': {
                             'usb': 'check_usb',
                             'cabo': 'check_usb',
@@ -818,12 +403,11 @@ class LogicalInferenceEngine:
                             'wi-fi': 'check_wifi_printer',
                             'rede': 'check_ethernet',
                             'ethernet': 'check_ethernet',
-                            'bluetooth': 'check_bluetooth'
-                        },
-                        'fallback_message': "Como sua impressora está conectada ao computador? USB, Wi-Fi, cabo de rede ou Bluetooth?"
+                            'bluetooth': 'check_bluetooth',
+                        }
                     },
                     'check_usb': {
-                        'message': "Conexão USB. Vamos verificar:\n1. O cabo USB está bem conectado nos dois lados?\n2. Teste em outra porta USB do computador\n3. O computador reconhece a impressora?\n\nO computador mostra que a impressora está conectada?",
+                        'message': "Conexão via USB. O cabo está bem conectado nas duas pontas? Tente conectar em outra porta USB do seu computador. O computador reconhece a impressora?",
                         'expected_responses': {
                             'sim': 'test_print',
                             'yes': 'test_print',
@@ -831,24 +415,22 @@ class LogicalInferenceEngine:
                             'mostra': 'test_print',
                             'nao': 'usb_troubleshoot',
                             'não': 'usb_troubleshoot',
-                            'no': 'usb_troubleshoot'
-                        },
-                        'fallback_message': "O computador reconhece a impressora conectada por USB? Responda 'sim' ou 'não'."
+                            'no': 'usb_troubleshoot',
+                        }
                     },
                     'usb_troubleshoot': {
-                        "message": "Vamos resolver a conexão USB:\n1. Troque de porta USB\n2. Teste outro cabo USB se tiver\n3. Reinicie o computador com a impressora conectada\n4. Verifique se precisa instalar drivers\n\nTentou essas soluções? Funcionou alguma?",
+                        'message': "Vamos resolver a conexão USB. Tente testar outro cabo USB, se tiver. E, se o problema continuar, pode ser que você precise instalar os drivers da impressora. Quer que eu te ajude a encontrar os drivers?",
                         'expected_responses': {
-                            'sim': 'test_print',
-                            'yes': 'test_print',
-                            'funcionou': 'test_print',
-                            'nao': 'driver_install',
-                            'não': 'driver_install',
-                            'no': 'driver_install'
-                        },
-                        'fallback_message': "Alguma das soluções USB funcionou? Responda 'sim' ou 'não'."
+                            'sim': 'driver_install',
+                            'yes': 'driver_install',
+                            'quero': 'driver_install',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
                     },
                     'check_wifi_printer': {
-                        'message': "Impressora Wi-Fi. Vamos verificar:\n1. A impressora está conectada na mesma rede Wi-Fi?\n2. O computador está na mesma rede?\n3. A impressora aparece na lista de dispositivos?\n\nA impressora está na mesma rede Wi-Fi que o computador?",
+                        'message': "Impressora Wi-Fi. A impressora está conectada na mesma rede Wi-Fi que o seu computador?",
                         'expected_responses': {
                             'sim': 'test_print',
                             'yes': 'test_print',
@@ -857,25 +439,22 @@ class LogicalInferenceEngine:
                             'nao': 'wifi_printer_setup',
                             'não': 'wifi_printer_setup',
                             'no': 'wifi_printer_setup',
-                            'nao sei': 'wifi_printer_setup'
-                        },
-                        'fallback_message': "A impressora está conectada na mesma rede Wi-Fi que o computador? Responda 'sim' ou 'não'."
+                        }
                     },
                     'wifi_printer_setup': {
-                        'message': "Vamos conectar a impressora no Wi-Fi:\n1. No painel da impressora, procure 'Configurações' ou 'Setup'\n2. Encontre 'Wi-Fi' ou 'Wireless'\n3. Selecione sua rede\n4. Digite a senha do Wi-Fi\n\nConseguiu encontrar as configurações de Wi-Fi na impressora?",
+                        'message': "Vamos conectar a impressora ao Wi-Fi. No painel da impressora, procure por 'Configurações' ou 'Wi-Fi'. Conseguiu encontrar?",
                         'expected_responses': {
                             'sim': 'wifi_connect_printer',
                             'yes': 'wifi_connect_printer',
                             'encontrei': 'wifi_connect_printer',
                             'achei': 'wifi_connect_printer',
-                            'nao': 'wifi_printer_help',
-                            'não': 'wifi_printer_help',
-                            'no': 'wifi_printer_help'
-                        },
-                        'fallback_message': "Conseguiu encontrar as configurações de Wi-Fi na impressora? Responda 'sim' ou 'não'."
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
                     },
                     'wifi_connect_printer': {
-                        'message': "Perfeito! Agora:\n1. Selecione sua rede Wi-Fi na lista\n2. Digite a senha (mesma do seu computador/celular)\n3. Confirme a conexão\n4. Aguarde a confirmação\n\nA impressora conectou no Wi-Fi? (geralmente mostra um ícone ou mensagem)",
+                        'message': "Ótimo! Agora selecione sua rede Wi-Fi na lista e digite a senha. A impressora conectou? (Geralmente aparece um ícone ou mensagem de confirmação).",
                         'expected_responses': {
                             'sim': 'add_printer_computer',
                             'yes': 'add_printer_computer',
@@ -883,59 +462,80 @@ class LogicalInferenceEngine:
                             'funcionou': 'add_printer_computer',
                             'nao': 'wifi_password_help',
                             'não': 'wifi_password_help',
-                            'no': 'wifi_password_help'
-                        },
-                        'fallback_message': "A impressora conectou no Wi-Fi? Responda 'sim' ou 'não'."
+                            'no': 'wifi_password_help',
+                        }
                     },
                     'wifi_password_help': {
-                        'message': "Problema na conexão Wi-Fi da impressora:\n1. Verifique se a senha está correta\n2. Certifique-se de que está na rede 2.4GHz (não 5GHz)\n3. Aproxime a impressora do roteador\n4. Reinicie a impressora e tente novamente\n\nTentou novamente? Funcionou?",
+                        'message': "Pode ser um erro na senha ou na rede. Verifique se a senha está correta e se a rede é 2.4GHz. Tente novamente. Funcionou?",
                         'expected_responses': {
                             'sim': 'add_printer_computer',
                             'yes': 'add_printer_computer',
                             'funcionou': 'add_printer_computer',
-                            'nao': 'wifi_printer_help',
-                            'não': 'wifi_printer_help',
-                            'no': 'wifi_printer_help'
-                        },
-                        'fallback_message': "Conseguiu conectar a impressora no Wi-Fi agora? Responda 'sim' ou 'não'."
-                    },
-                    'wifi_printer_help': {
-                        'message': "Algumas impressoras têm métodos alternativos:\n• Botão WPS (pressione no roteador e na impressora)\n• Aplicativo do fabricante (HP Smart, Canon PRINT, etc.)\n• Configuração via cabo USB temporário\n\nQual método quer tentar?",
-                        'expected_responses': {
-                            'wps': 'wps_setup',
-                            'aplicativo': 'app_setup',
-                            'app': 'app_setup',
-                            'cabo': 'usb_temp_setup',
-                            'usb': 'usb_temp_setup'
-                        },
-                        'fallback_message': "Qual método quer tentar: WPS, aplicativo do fabricante ou cabo USB temporário?"
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
                     },
                     'add_printer_computer': {
-                        'message': "Ótimo! A impressora está conectada no Wi-Fi. Agora vamos adicioná-la ao computador:\n\nWindows:\n1. Configurações > Impressoras e scanners\n2. Adicionar impressora\n3. Selecione sua impressora\n\nMac:\n1. Preferências > Impressoras\n2. Clique no +\n3. Selecione sua impressora\n\nConseguiu adicionar?",
+                        'message': "Perfeito! A impressora está no Wi-Fi. Agora vamos adicioná-la ao computador. Em 'Configurações' ou 'Preferências', procure por 'Impressoras e scanners' e adicione a sua impressora. Conseguiu adicionar?",
                         'expected_responses': {
                             'sim': 'test_print',
                             'yes': 'test_print',
                             'adicionei': 'test_print',
                             'funcionou': 'test_print',
-                            'nao': 'add_printer_help',
-                            'não': 'add_printer_help',
-                            'no': 'add_printer_help'
-                        },
-                        'fallback_message': "Conseguiu adicionar a impressora no computador? Responda 'sim' ou 'não'."
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'check_ethernet': {
+                        'message': "Conexão por cabo de rede. Verifique se o cabo está bem conectado tanto na impressora quanto no roteador ou na parede. A impressora tem alguma luz indicando a conexão de rede? Ela está acesa?",
+                        'expected_responses': {
+                            'sim': 'test_print',
+                            'yes': 'test_print',
+                            'acendeu': 'test_print',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'check_bluetooth': {
+                        'message': "Conexão Bluetooth. Certifique-se de que o Bluetooth da impressora e do seu computador estão ligados e pareados. A impressora aparece na lista de dispositivos Bluetooth no seu computador?",
+                        'expected_responses': {
+                            'sim': 'test_print',
+                            'yes': 'test_print',
+                            'aparece': 'test_print',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'connection_issue': {
+                        'message': "A impressora não está sendo reconhecida. Vamos verificar a conexão. Como ela está conectada ao seu computador? Responda com a opção:\n\n- **Cabo USB**\n- **Wi-Fi**\n- **Cabo de rede** (Ethernet)\n- **Bluetooth**",
+                        'expected_responses': {
+                            'usb': 'check_usb',
+                            'cabo': 'check_usb',
+                            'wifi': 'check_wifi_printer',
+                            'wi-fi': 'check_wifi_printer',
+                            'rede': 'check_ethernet',
+                            'ethernet': 'check_ethernet',
+                            'bluetooth': 'check_bluetooth',
+                        }
                     },
                     'driver_install': {
-                        'message': "Vamos instalar os drivers da impressora:\n1. Acesse o site do fabricante (HP, Canon, Epson, etc.)\n2. Procure por 'Suporte' ou 'Downloads'\n3. Digite o modelo da sua impressora\n4. Baixe e instale o driver\n\nQual é a marca da sua impressora?",
+                        'message': "Vamos instalar os drivers. Você precisa acessar o site do fabricante (HP, Canon, Epson, etc.), procurar pelo modelo da sua impressora e baixar os drivers. Você conseguiu fazer isso?",
                         'expected_responses': {
-                            'hp': 'hp_driver',
-                            'canon': 'canon_driver',
-                            'epson': 'epson_driver',
-                            'brother': 'brother_driver',
-                            'samsung': 'samsung_driver'
-                        },
-                        'fallback_message': "Qual é a marca da sua impressora? HP, Canon, Epson, Brother, Samsung ou outra?"
+                            'sim': 'test_print',
+                            'yes': 'test_print',
+                            'baixei': 'test_print',
+                            'instalei': 'test_print',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
                     },
                     'test_print': {
-                        'message': "Excelente! Agora vamos testar a impressão:\n1. Abra um documento simples (Bloco de Notas)\n2. Digite algumas palavras\n3. Clique em 'Imprimir' ou Ctrl+P\n4. Selecione sua impressora\n5. Clique em 'Imprimir'\n\nA impressora imprimiu o teste?",
+                        'message': "Excelente! Agora vamos testar. Tente imprimir uma página de teste ou um documento simples. A impressora imprimiu?",
                         'expected_responses': {
                             'sim': 'success',
                             'yes': 'success',
@@ -943,63 +543,20 @@ class LogicalInferenceEngine:
                             'funcionou': 'success',
                             'nao': 'print_troubleshoot',
                             'não': 'print_troubleshoot',
-                            'no': 'print_troubleshoot'
-                        },
-                        'fallback_message': "A impressora imprimiu o teste? Responda 'sim' ou 'não'."
+                            'no': 'print_troubleshoot',
+                        }
                     },
                     'print_troubleshoot': {
-                        'message': "Vamos resolver o problema de impressão:\n1. Verifique se há papel na bandeja\n2. Confirme se há tinta/toner\n3. Verifique se não há papel atolado\n4. Reinicie a impressora\n\nO que você observa? Há alguma luz piscando ou mensagem de erro?",
+                        'message': "O que você observa? Há alguma mensagem de erro ou luz piscando na impressora? Responda com a opção que melhor descreve o seu problema:\n\n- **Papel atolado**\n- **Falta tinta ou toner**\n- **Outro erro**",
                         'expected_responses': {
-                            'papel': 'paper_issue',
+                            'papel': 'paper_jam',
                             'tinta': 'ink_issue',
-                            'atolado': 'paper_jam',
-                            'erro': 'error_message',
-                            'luz': 'error_lights',
-                            'nada': 'general_troubleshoot'
-                        },
-                        'fallback_message': "O que você observa na impressora? Papel, tinta, atolamento, erro ou nada específico?"
-                    },
-                    'paper_issue': {
-                        'message': "Problema com papel:\n1. Verifique se há papel suficiente na bandeja\n2. Ajuste as guias laterais do papel\n3. Use papel do tamanho correto (A4, Carta)\n4. Não sobrecarregue a bandeja\n\nColocou papel corretamente? Tente imprimir novamente.",
-                        'expected_responses': {
-                            'sim': 'test_print',
-                            'yes': 'test_print',
-                            'funcionou': 'test_print',
-                            'nao': 'paper_jam',
-                            'não': 'paper_jam',
-                            'no': 'paper_jam'
-                        },
-                        'fallback_message': "Colocou o papel corretamente? Responda 'sim' ou 'não'."
-                    },
-                    'ink_issue': {
-                        'message': "Problema com tinta/toner:\n1. Verifique o nível de tinta no painel ou computador\n2. Remova e recoloque os cartuchos\n3. Limpe os contatos dos cartuchos\n4. Se necessário, substitua cartuchos vazios\n\nOs cartuchos têm tinta suficiente?",
-                        'expected_responses': {
-                            'sim': 'test_print',
-                            'yes': 'test_print',
-                            'tem': 'test_print',
-                            'suficiente': 'test_print',
-                            'nao': 'replace_cartridge',
-                            'não': 'replace_cartridge',
-                            'no': 'replace_cartridge',
-                            'vazio': 'replace_cartridge'
-                        },
-                        'fallback_message': "Os cartuchos têm tinta suficiente? Responda 'sim' ou 'não'."
-                    },
-                    'replace_cartridge': {
-                        'message': "Hora de trocar os cartuchos:\n1. Abra a tampa da impressora\n2. Remova o cartucho vazio\n3. Desembale o novo cartucho\n4. Remova todas as fitas protetoras\n5. Instale o novo cartucho\n\nTrocou o cartucho? Tente imprimir novamente.",
-                        'expected_responses': {
-                            'sim': 'test_print',
-                            'yes': 'test_print',
-                            'troquei': 'test_print',
-                            'instalei': 'test_print',
-                            'nao': 'cartridge_help',
-                            'não': 'cartridge_help',
-                            'no': 'cartridge_help'
-                        },
-                        'fallback_message': "Conseguiu trocar o cartucho? Responda 'sim' ou 'não'."
+                            'toner': 'ink_issue',
+                            'outro': 'escalate_support',
+                        }
                     },
                     'paper_jam': {
-                        'message': "Vamos resolver o papel atolado:\n1. Desligue a impressora\n2. Abra todas as tampas\n3. Remova cuidadosamente o papel atolado\n4. Verifique se não sobrou pedaços\n5. Feche as tampas e ligue novamente\n\nConseguiu remover todo o papel atolado?",
+                        'message': "Para resolver o papel atolado:\n1. Desligue a impressora.\n2. Abra todas as tampas.\n3. Remova cuidadosamente o papel atolado, sem forçar.\n4. Feche as tampas e ligue a impressora.\n\nConseguiu remover todo o papel?",
                         'expected_responses': {
                             'sim': 'test_print',
                             'yes': 'test_print',
@@ -1007,93 +564,142 @@ class LogicalInferenceEngine:
                             'limpei': 'test_print',
                             'nao': 'paper_jam_help',
                             'não': 'paper_jam_help',
-                            'no': 'paper_jam_help'
-                        },
-                        'fallback_message': "Conseguiu remover todo o papel atolado? Responda 'sim' ou 'não'."
+                            'no': 'paper_jam_help',
+                        }
                     },
                     'paper_jam_help': {
-                        'message': "Para papel atolado difícil:\n1. Use uma lanterna para ver melhor\n2. Puxe o papel na direção do movimento\n3. Não force, pode danificar a impressora\n4. Se necessário, consulte o manual\n\nSe não conseguir, pode precisar de assistência técnica. Conseguiu agora?",
+                        'message': "Se o papel está difícil de remover, não force! Isso pode danificar a impressora. Recomendo consultar o manual da sua impressora para ver a forma correta de remover o papel atolado. Conseguiu resolver?",
                         'expected_responses': {
                             'sim': 'test_print',
                             'yes': 'test_print',
                             'consegui': 'test_print',
                             'nao': 'escalate_support',
                             'não': 'escalate_support',
-                            'no': 'escalate_support'
-                        },
-                        'fallback_message': "Conseguiu remover o papel atolado? Responda 'sim' ou 'não'."
+                            'no': 'escalate_support',
+                        }
                     },
-                    'print_quality': {
-                        'message': "Problema de qualidade de impressão. Qual é o problema específico?\n• Texto borrado ou manchado\n• Cores desbotadas\n• Linhas ou riscos\n• Impressão muito clara\n• Impressão cortada",
+                    'ink_issue': {
+                        'message': "Vamos verificar a tinta ou toner. Remova o cartucho, verifique se ele tem tinta e recoloque-o firmemente. Se estiver vazio, substitua-o. Fez isso? A impressora agora imprime?",
                         'expected_responses': {
-                            'borrado': 'clean_heads',
-                            'manchado': 'clean_heads',
-                            'cores': 'color_issue',
-                            'desbotadas': 'color_issue',
-                            'linhas': 'alignment_issue',
-                            'riscos': 'alignment_issue',
-                            'clara': 'ink_issue',
-                            'cortada': 'paper_size_issue'
-                        },
-                        'fallback_message': "Qual é o problema específico de qualidade? Borrado, cores ruins, linhas, muito claro ou cortado?"
+                            'sim': 'test_print',
+                            'yes': 'test_print',
+                            'troquei': 'test_print',
+                            'instalei': 'test_print',
+                            'nao': 'ink_issue_help',
+                            'não': 'ink_issue_help',
+                            'no': 'ink_issue_help',
+                        }
                     },
-                    'clean_heads': {
-                        'message': "Vamos limpar os cabeçotes de impressão:\n1. Acesse as configurações da impressora\n2. Procure por 'Manutenção' ou 'Limpeza'\n3. Execute 'Limpeza dos cabeçotes'\n4. Aguarde o processo terminar\n5. Imprima uma página de teste\n\nA qualidade melhorou após a limpeza?",
+                    'ink_issue_help': {
+                        'message': "Se o cartucho ainda tem tinta, mas a impressão está falhando, pode ser que as saídas estejam entupidas. Em 'Manutenção' nas configurações da impressora, procure por uma opção de 'Limpeza Profunda' ou 'Alinhamento de Cartuchos'. Tente isso. A impressão melhorou?",
                         'expected_responses': {
                             'sim': 'success',
                             'yes': 'success',
                             'melhorou': 'success',
-                            'nao': 'deep_clean',
-                            'não': 'deep_clean',
-                            'no': 'deep_clean'
-                        },
-                        'fallback_message': "A qualidade de impressão melhorou após a limpeza? Responda 'sim' ou 'não'."
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
                     },
-                    'deep_clean': {
-                        'message': "Vamos fazer uma limpeza profunda:\n1. Execute 'Limpeza profunda' ou 'Deep cleaning'\n2. Aguarde (pode demorar alguns minutos)\n3. Imprima página de teste\n4. Se necessário, repita o processo\n\nA limpeza profunda resolveu?",
+                    'print_quality': {
+                        'message': "Problema de qualidade de impressão. Qual o problema? Responda com a opção que melhor descreve o seu problema:\n\n- **Borrado ou manchado**\n- **Cores desbotadas**\n- **Linhas ou riscos**\n- **Outro**",
+                        'expected_responses': {
+                            'borrado': 'clean_heads',
+                            'manchado': 'clean_heads',
+                            'cores': 'clean_heads',
+                            'desbotadas': 'clean_heads',
+                            'linhas': 'clean_heads',
+                            'riscos': 'clean_heads',
+                            'outro': 'escalate_support',
+                        }
+                    },
+                    'clean_heads': {
+                        'message': "Vamos tentar limpar os cabeçotes de impressão. Nas configurações da impressora no seu computador, procure por 'Manutenção' ou 'Limpeza'. Execute o processo e depois imprima uma página de teste. A qualidade melhorou?",
                         'expected_responses': {
                             'sim': 'success',
                             'yes': 'success',
-                            'resolveu': 'success',
-                            'nao': 'replace_cartridge',
-                            'não': 'replace_cartridge',
-                            'no': 'replace_cartridge'
-                        },
-                        'fallback_message': "A limpeza profunda resolveu o problema? Responda 'sim' ou 'não'."
+                            'melhorou': 'success',
+                            'nao': 'clean_heads_help',
+                            'não': 'clean_heads_help',
+                            'no': 'clean_heads_help',
+                        }
+                    },
+                    'clean_heads_help': {
+                        'message': "Se a limpeza padrão não resolveu, tente a 'Limpeza Profunda' ou 'Deep Cleaning'. Se mesmo assim não funcionar, o problema pode ser físico com os cartuchos ou a impressora. Conseguiu resolver?",
+                        'expected_responses': {
+                            'sim': 'success',
+                            'yes': 'success',
+                            'consegui': 'success',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'other_printer_problem': {
+                        'message': "Pode me descrever melhor o problema? Por exemplo, 'A impressora está muito lenta' ou 'Não consigo digitalizar'.",
+                        'expected_responses': {
+                            'lenta': 'escalate_support',
+                            'digitalizar': 'escalate_support',
+                            'nao sei': 'escalate_support'
+                        }
                     },
                     'escalate_support': {
-                        'message': "O problema parece mais complexo e pode precisar de assistência técnica especializada.\n\nAntes de procurar assistência:\n• Anote o modelo exato da impressora\n• Descreva o problema detalhadamente\n• Verifique se ainda está na garantia\n\nUm técnico poderá ajudar melhor com seu caso específico.",
-                        'expected_responses': {},
-                        'solution': "Caso escalado para assistência técnica especializada."
+                        'message': "O problema parece mais complexo. Vou te conectar com um técnico especializado. Enquanto aguarda, anote o modelo do seu roteador e verifique se há alguma luz piscando. Posso te ajudar com mais alguma coisa?",
+                        'expected_responses': {
+                            'sim': 'flow_continue',
+                            'yes': 'flow_continue',
+                            'nao': 'flow_exit',
+                            'não': 'flow_exit',
+                            'no': 'flow_exit'
+                        }
                     },
                     'success': {
-                        'message': "Excelente! 🎉 Sua impressora está funcionando perfeitamente!\n\nDicas para manter a impressora em bom estado:\n• Imprima pelo menos uma página por semana\n• Mantenha cartuchos originais ou compatíveis de qualidade\n• Limpe regularmente\n• Use papel de boa qualidade\n\nPosso ajudar com mais alguma coisa?",
+                        'message': "Excelente! Sua impressora está funcionando perfeitamente! Posso te ajudar com mais alguma coisa?",
+                        'expected_responses': {
+                            'sim': 'flow_continue',
+                            'yes': 'flow_continue',
+                            'nao': 'flow_exit',
+                            'não': 'flow_exit',
+                            'no': 'flow_exit'
+                        }
+                    },
+                    'flow_continue': {
+                        'message': "Ótimo! Posso ajudar com:\n\n- Redefinição de senhas\n- Problemas com impressora\n- Configuração de e-mail",
+                        'expected_responses': {
+                            'senha': 'password_recovery',
+                            'impressora': 'printer_troubleshooting',
+                            'email': 'email_configuration',
+                            'nao': 'flow_exit',
+                            'não': 'flow_exit',
+                        },
+                        'solution': "Oferecendo menu principal."
+                    },
+                    'flow_exit': {
+                        'message': "Foi um prazer ajudar! Tenha um ótimo dia. 😊",
                         'expected_responses': {},
-                        'solution': "Impressora configurada e funcionando com sucesso."
+                        'solution': "O usuário optou por sair do fluxo da impressora."
                     }
                 }
             },
-            
             'email_configuration': {
                 'steps': {
                     'start': {
-                        'message': "Olá! Vejo que você precisa de ajuda com configuração de email. 📧\n\nQual é sua situação?\n• Configurar email pela primeira vez\n• Email parou de funcionar\n• Não consigo enviar emails\n• Não recebo emails\n• Outro problema",
+                        'message': "Olá! Vejo que você precisa de ajuda com configuração de e-mail. Qual é a sua situação? Responda com a opção que melhor descreve o seu problema:\n\n- **Configurar pela primeira vez**\n- **Não consigo enviar e-mails**\n- **Não consigo receber e-mails**\n- **E-mail parou de funcionar**\n- **Outro problema**",
                         'expected_responses': {
-                            'primeira': 'first_time_setup',
                             'primeira vez': 'first_time_setup',
+                            'primeira': 'first_time_setup',
                             'configurar': 'first_time_setup',
-                            'parou': 'email_stopped',
-                            'nao funciona': 'email_stopped',
                             'enviar': 'send_problem',
                             'nao consigo enviar': 'send_problem',
                             'receber': 'receive_problem',
                             'nao recebo': 'receive_problem',
-                            'outro': 'other_email_problem'
-                        },
-                        'fallback_message': "Qual é o problema específico com seu email? Primeira configuração, parou de funcionar, problemas para enviar/receber ou outro?"
+                            'parou': 'email_stopped',
+                            'nao funciona': 'email_stopped',
+                            'outro': 'other_email_problem',
+                        }
                     },
                     'first_time_setup': {
-                        'message': "Vamos configurar seu email! Primeiro preciso saber:\n\nQual provedor de email você usa?\n• Gmail\n• Outlook/Hotmail\n• Yahoo\n• Email corporativo/trabalho\n• Outro provedor",
+                        'message': "Vamos configurar seu e-mail! Qual provedor você usa? Responda com o nome do seu provedor:\n\n- **Gmail**\n- **Outlook** (Hotmail/Live)\n- **Yahoo**\n- **Corporativo** (da empresa)\n- **Outro provedor**",
                         'expected_responses': {
                             'gmail': 'gmail_setup',
                             'google': 'gmail_setup',
@@ -1103,175 +709,301 @@ class LogicalInferenceEngine:
                             'corporativo': 'corporate_setup',
                             'trabalho': 'corporate_setup',
                             'empresa': 'corporate_setup',
-                            'outro': 'other_provider_setup'
-                        },
-                        'fallback_message': "Qual provedor de email você usa? Gmail, Outlook, Yahoo, email corporativo ou outro?"
+                            'outro': 'escalate_support',
+                        }
                     },
                     'gmail_setup': {
-                        'message': "Configuração do Gmail! 📬\n\nEm qual aplicativo você quer configurar?\n• Outlook (Windows/Mac)\n• Mail (iPhone/iPad)\n• Email (Android)\n• Thunderbird\n• Outro aplicativo",
-                        'expected_responses': {
-                            'outlook': 'gmail_outlook',
-                            'mail': 'gmail_iphone',
-                            'iphone': 'gmail_iphone',
-                            'android': 'gmail_android',
-                            'thunderbird': 'gmail_thunderbird',
-                            'outro': 'gmail_generic'
-                        },
-                        'fallback_message': "Em qual aplicativo quer configurar o Gmail? Outlook, Mail (iPhone), Email (Android), Thunderbird ou outro?"
-                    },
-                    'gmail_outlook': {
-                        'message': "Configurando Gmail no Outlook:\n\n1. Abra o Outlook\n2. Vá em Arquivo > Adicionar Conta\n3. Digite seu email do Gmail\n4. Clique em 'Conectar'\n5. Será redirecionado para login do Google\n\nConseguiu chegar na tela de login do Google?",
-                        'expected_responses': {
-                            'sim': 'gmail_outlook_login',
-                            'yes': 'gmail_outlook_login',
-                            'consegui': 'gmail_outlook_login',
-                            'nao': 'gmail_outlook_help',
-                            'não': 'gmail_outlook_help',
-                            'no': 'gmail_outlook_help'
-                        },
-                        'fallback_message': "Conseguiu chegar na tela de login do Google? Responda 'sim' ou 'não'."
-                    },
-                    'gmail_outlook_login': {
-                        'message': "Perfeito! Agora:\n1. Digite sua senha do Gmail\n2. Se tiver autenticação em 2 fatores, use o código\n3. Autorize o Outlook a acessar sua conta\n4. Aguarde a sincronização\n\nO Outlook conseguiu conectar e baixar seus emails?",
+                        'message': "Configuração do Gmail. Na maioria dos aplicativos de e-mail, basta digitar seu endereço e senha, e as configurações são automáticas. Você já tentou isso?",
                         'expected_responses': {
                             'sim': 'test_email_send',
                             'yes': 'test_email_send',
-                            'conectou': 'test_email_send',
-                            'baixou': 'test_email_send',
-                            'nao': 'gmail_auth_problem',
-                            'não': 'gmail_auth_problem',
-                            'no': 'gmail_auth_problem'
-                        },
-                        'fallback_message': "O Outlook conectou e baixou seus emails do Gmail? Responda 'sim' ou 'não'."
+                            'ja fiz': 'test_email_send',
+                            'nao': 'gmail_manual_setup_offer',
+                            'não': 'gmail_manual_setup_offer',
+                            'no': 'gmail_manual_setup_offer',
+                        }
                     },
-                    'gmail_auth_problem': {
-                        'message': "Problema de autenticação. Vamos resolver:\n\n1. Verifique se a senha está correta\n2. Se usa autenticação em 2 fatores, pode precisar de senha de app\n3. Acesse myaccount.google.com\n4. Vá em Segurança > Senhas de app\n5. Gere uma senha específica para o Outlook\n\nQuer tentar gerar uma senha de app?",
+                    'gmail_manual_setup_offer': {
+                        'message': "Se a configuração automática falhou, pode ser um problema de autenticação. Para resolver, você pode precisar de uma 'Senha de App'. Quer tentar gerar uma?",
                         'expected_responses': {
                             'sim': 'gmail_app_password',
                             'yes': 'gmail_app_password',
                             'quero': 'gmail_app_password',
                             'gerar': 'gmail_app_password',
-                            'nao': 'gmail_basic_auth',
-                            'não': 'gmail_basic_auth',
-                            'no': 'gmail_basic_auth'
-                        },
-                        'fallback_message': "Quer tentar gerar uma senha de app para o Gmail? Responda 'sim' ou 'não'."
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
                     },
                     'gmail_app_password': {
-                        'message': "Gerando senha de app:\n1. Acesse myaccount.google.com\n2. Segurança > Verificação em duas etapas\n3. Senhas de app\n4. Selecione 'Email' e 'Computador'\n5. Copie a senha gerada\n6. Use essa senha no Outlook (não sua senha normal)\n\nConseguiu gerar e usar a senha de app?",
+                        'message': "Gerando senha de app:\n1. Acesse **myaccount.google.com**.\n2. Vá em 'Segurança' > 'Verificação em duas etapas' > 'Senhas de app'.\n3. Gere uma nova senha para o seu aplicativo de e-mail.\n4. Use essa senha gerada (não sua senha normal) no aplicativo.\n\nConseguiu gerar e usar a senha de app?",
                         'expected_responses': {
                             'sim': 'test_email_send',
                             'yes': 'test_email_send',
                             'funcionou': 'test_email_send',
-                            'nao': 'gmail_basic_auth',
-                            'não': 'gmail_basic_auth',
-                            'no': 'gmail_basic_auth'
-                        },
-                        'fallback_message': "Conseguiu usar a senha de app? Responda 'sim' ou 'não'."
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
                     },
                     'outlook_setup': {
-                        'message': "Configuração do Outlook/Hotmail! 📧\n\nEm qual aplicativo você quer configurar?\n• Outlook (Windows/Mac)\n• Mail (iPhone/iPad)\n• Email (Android)\n• Thunderbird\n• Outro aplicativo",
+                        'message': "Configuração do Outlook. Na maioria dos casos, o aplicativo detecta as configurações automaticamente. Apenas digite seu e-mail e senha. Conseguiu adicionar a conta?",
                         'expected_responses': {
-                            'outlook': 'outlook_outlook',
-                            'mail': 'outlook_iphone',
-                            'iphone': 'outlook_iphone',
-                            'android': 'outlook_android',
-                            'thunderbird': 'outlook_thunderbird',
-                            'outro': 'outlook_generic'
-                        },
-                        'fallback_message': "Em qual aplicativo quer configurar o Outlook/Hotmail?"
+                            'sim': 'test_email_send',
+                            'yes': 'test_email_send',
+                            'nao': 'outlook_manual_setup',
+                            'não': 'outlook_manual_setup',
+                            'no': 'outlook_manual_setup',
+                        }
+                    },
+                    'outlook_manual_setup': {
+                        'message': "Se a configuração automática falhou, você precisará das configurações manuais. Recomendo procurar por 'Configurações de servidor Outlook' online. Quando tiver as informações, me diga que eu te ajudo. Você conseguiu encontrar?",
+                        'expected_responses': {
+                            'sim': 'test_email_send',
+                            'yes': 'test_email_send',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'yahoo_setup': {
+                        'message': "Configuração do Yahoo. Similar ao Gmail, você pode precisar de uma 'Senha de App' se a verificação em duas etapas estiver ativada. Você já gerou uma?",
+                        'expected_responses': {
+                            'sim': 'yahoo_app_password_instructions',
+                            'yes': 'yahoo_app_password_instructions',
+                            'nao': 'yahoo_app_password_instructions',
+                            'não': 'yahoo_app_password_instructions',
+                            'no': 'yahoo_app_password_instructions',
+                        }
+                    },
+                    'yahoo_app_password_instructions': {
+                        'message': "Para gerar a senha de app do Yahoo, acesse as configurações de segurança da sua conta e procure por 'Senhas de app'. Use essa senha no seu aplicativo de e-mail. Conseguiu?",
+                        'expected_responses': {
+                            'sim': 'test_email_send',
+                            'yes': 'test_email_send',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
                     },
                     'corporate_setup': {
-                        'message': "Email corporativo! 🏢\n\nPara configurar email da empresa, você precisa das informações do seu departamento de TI:\n\n• Servidor de entrada (IMAP/POP3)\n• Servidor de saída (SMTP)\n• Portas e segurança\n• Seu usuário e senha\n\nVocê tem essas informações?",
+                        'message': "Para e-mail corporativo, você precisa das informações do seu departamento de TI, como o servidor de entrada (IMAP/POP) e o servidor de saída (SMTP). Você tem essas informações?",
                         'expected_responses': {
                             'sim': 'corporate_manual_setup',
                             'yes': 'corporate_manual_setup',
                             'tenho': 'corporate_manual_setup',
                             'nao': 'contact_it_support',
                             'não': 'contact_it_support',
-                            'no': 'contact_it_support'
-                        },
-                        'fallback_message': "Você tem as informações de configuração do email corporativo? Responda 'sim' ou 'não'."
+                            'no': 'contact_it_support',
+                        }
+                    },
+                    'corporate_manual_setup': {
+                        'message': "Com as informações em mãos, procure por 'Adicionar Conta Manualmente' no seu aplicativo de e-mail e insira os dados fornecidos pelo TI. Funcionou?",
+                        'expected_responses': {
+                            'sim': 'test_email_send',
+                            'yes': 'test_email_send',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
                     },
                     'contact_it_support': {
-                        'message': "Para email corporativo, você precisa entrar em contato com:\n• Departamento de TI da empresa\n• Suporte técnico interno\n• Administrador de sistemas\n\nEles fornecerão:\n• Configurações específicas\n• Usuário e senha\n• Instruções de segurança\n\nApós obter as informações, posso ajudar com a configuração!",
+                        'message': "Para problemas com e-mail corporativo, você precisa entrar em contato com o suporte de TI da sua empresa. Eles podem fornecer as configurações corretas ou resolver o problema de forma mais específica. Posso te ajudar com mais alguma coisa?",
                         'expected_responses': {
-                            'ok': 'wait_it_info',
-                            'entendi': 'wait_it_info',
-                            'vou contatar': 'wait_it_info'
-                        },
-                        'fallback_message': "Entre em contato com o TI da empresa para obter as configurações. Depois posso ajudar!"
+                            'sim': 'flow_continue',
+                            'yes': 'flow_continue',
+                            'nao': 'flow_exit',
+                            'não': 'flow_exit',
+                            'no': 'flow_exit'
+                        }
+                    },
+                    'email_stopped': {
+                        'message': "Seu e-mail parou de funcionar. O que acontece quando você tenta usá-lo? Responda com a opção que melhor descreve o seu problema:\n\n- **Pede senha** constantemente\n- **Erro de conexão**\n- **Não baixa e-mails novos**\n- **Não consigo enviar**",
+                        'expected_responses': {
+                            'senha': 'password_problem',
+                            'pede senha': 'password_problem',
+                            'conexao': 'escalate_support', 
+                            'erro conexao': 'escalate_support', 
+                            'nao baixa': 'receive_problem',
+                            'não baixa': 'receive_problem',
+                            'nao envia': 'send_problem',
+                            'não envia': 'send_problem',
+                        }
+                    },
+                    'password_problem': {
+                        'message': "Se o aplicativo de e-mail pede a senha, provavelmente ela mudou. Qual é seu provedor de e-mail? (Gmail, Outlook, etc.)",
+                        'expected_responses': {
+                            'gmail': 'gmail_password_update',
+                            'outlook': 'outlook_password_update',
+                            'yahoo': 'yahoo_password_update',
+                            'corporativo': 'corporate_password_update',
+                        }
+                    },
+                    'gmail_password_update': {
+                        'message': "Para atualizar a senha do Gmail, você pode precisar de uma 'Senha de App'. Vá nas configurações de segurança da sua conta Google para gerar uma e use-a no aplicativo. Funcionou?",
+                        'expected_responses': {
+                            'sim': 'test_email_send',
+                            'yes': 'test_email_send',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'outlook_password_update': {
+                        'message': "Para o Outlook, tente simplesmente atualizar a senha nas configurações da sua conta no aplicativo de e-mail. Se não funcionar, tente remover a conta e adicioná-la novamente. Funcionou?",
+                        'expected_responses': {
+                            'sim': 'test_email_send',
+                            'yes': 'test_email_send',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'corporate_password_update': {
+                        'message': "Para e-mail corporativo, é essencial entrar em contato com o suporte de TI da sua empresa para redefinir a senha e garantir que não haja bloqueios de segurança. Posso te ajudar com mais alguma coisa?",
+                        'expected_responses': {
+                            'sim': 'flow_continue',
+                            'yes': 'flow_continue',
+                            'nao': 'flow_exit',
+                            'não': 'flow_exit',
+                            'no': 'flow_exit'
+                        }
+                    },
+                    'send_problem': {
+                        'message': "Problema para enviar e-mails. Verifique se os e-mails ficam presos na sua caixa de saída. Se sim, o problema é com o servidor de saída (SMTP). Tente reiniciar o aplicativo de e-mail. Funcionou?",
+                        'expected_responses': {
+                            'sim': 'test_email_send',
+                            'yes': 'test_email_send',
+                            'nao': 'send_problem_help',
+                            'não': 'send_problem_help',
+                            'no': 'send_problem_help',
+                        }
+                    },
+                    'send_problem_help': {
+                        'message': "O servidor de saída (SMTP) pode estar com problemas. Verifique as configurações de porta e segurança com o seu provedor de e-mail. Se o problema persistir, pode ser um bloqueio de firewall ou do provedor. Posso te ajudar com mais alguma coisa?",
+                        'expected_responses': {
+                            'sim': 'flow_continue',
+                            'yes': 'flow_continue',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'receive_problem': {
+                        'message': "Problema para receber e-mails. Verifique se a sua caixa de entrada não está cheia ou se os e-mails não estão indo para a pasta de spam. Tente reiniciar o aplicativo. Funcionou?",
+                        'expected_responses': {
+                            'sim': 'success',
+                            'yes': 'success',
+                            'nao': 'receive_problem_help',
+                            'não': 'receive_problem_help',
+                            'no': 'receive_problem_help',
+                        }
+                    },
+                    'receive_problem_help': {
+                        'message': "Se a sua caixa de entrada não está cheia, o problema pode estar no servidor de entrada (IMAP/POP). Tente verificar as configurações de porta e segurança. Posso te ajudar a encontrar as configurações do seu provedor se for um serviço popular. Quer tentar?",
+                        'expected_responses': {
+                            'sim': 'find_provider_settings',
+                            'yes': 'find_provider_settings',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'find_provider_settings': {
+                        'message': "Qual é o seu provedor de e-mail? (Gmail, Outlook, Yahoo, etc.)",
+                        'expected_responses': {
+                            'gmail': 'gmail_settings_info',
+                            'outlook': 'outlook_settings_info',
+                            'yahoo': 'yahoo_settings_info',
+                            'nao sei': 'escalate_support',
+                            'outro': 'escalate_support'
+                        }
+                    },
+                    'gmail_settings_info': {
+                        'message': "As configurações para Gmail geralmente são:\n- **Servidor de entrada (IMAP)**: imap.gmail.com (Porta 993, SSL)\n- **Servidor de saída (SMTP)**: smtp.gmail.com (Porta 465 ou 587, SSL/TLS)\n\nVocê pode tentar inserir esses dados manualmente no seu aplicativo. Conseguiu?",
+                        'expected_responses': {
+                            'sim': 'test_email_send',
+                            'yes': 'test_email_send',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'outlook_settings_info': {
+                        'message': "As configurações para Outlook geralmente são:\n- **Servidor de entrada (IMAP)**: outlook.office365.com (Porta 993, SSL)\n- **Servidor de saída (SMTP)**: smtp.office365.com (Porta 587, TLS)\n\nVocê pode tentar inserir esses dados manualmente no seu aplicativo. Conseguiu?",
+                        'expected_responses': {
+                            'sim': 'test_email_send',
+                            'yes': 'test_email_send',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'yahoo_settings_info': {
+                        'message': "As configurações para Yahoo geralmente são:\n- **Servidor de entrada (IMAP)**: imap.mail.yahoo.com (Porta 993, SSL)\n- **Servidor de saída (SMTP)**: smtp.mail.yahoo.com (Porta 465, SSL)\n\nVocê pode tentar inserir esses dados manualmente no seu aplicativo. Conseguiu?",
+                        'expected_responses': {
+                            'sim': 'test_email_send',
+                            'yes': 'test_email_send',
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
+                    },
+                    'other_email_problem': {
+                        'message': "Pode me descrever melhor o problema? Por exemplo, 'Meu e-mail está travando' ou 'Não consigo abrir anexos'.",
+                        'expected_responses': {
+                            'travando': 'escalate_support',
+                            'anexos': 'escalate_support',
+                            'nao sei': 'escalate_support'
+                        }
                     },
                     'test_email_send': {
-                        'message': "Ótimo! O email está configurado. Vamos testar:\n\n1. Compose um novo email\n2. Envie para você mesmo\n3. Verifique se recebe o email\n4. Teste responder\n\nO teste de envio e recebimento funcionou?",
+                        'message': "Ótimo! Agora vamos testar. Envie um e-mail para você mesmo. Você conseguiu enviar e receber a mensagem?",
                         'expected_responses': {
                             'sim': 'success',
                             'yes': 'success',
                             'funcionou': 'success',
                             'recebeu': 'success',
-                            'nao': 'email_test_troubleshoot',
-                            'não': 'email_test_troubleshoot',
-                            'no': 'email_test_troubleshoot'
-                        },
-                        'fallback_message': "O teste de envio e recebimento funcionou? Responda 'sim' ou 'não'."
-                    },
-                    'email_stopped': {
-                        'message': "Email parou de funcionar. Vamos diagnosticar:\n\nO que acontece quando você tenta usar o email?\n• Pede senha constantemente\n• Erro de conexão\n• Não baixa emails novos\n• Não consegue enviar\n• Outro erro",
-                        'expected_responses': {
-                            'senha': 'password_problem',
-                            'pede senha': 'password_problem',
-                            'conexao': 'connection_error',
-                            'erro conexao': 'connection_error',
-                            'nao baixa': 'receive_problem',
-                            'não baixa': 'receive_problem',
-                            'nao envia': 'send_problem',
-                            'não envia': 'send_problem',
-                            'outro': 'other_email_problem'
-                        },
-                        'fallback_message': "O que acontece quando tenta usar o email? Pede senha, erro de conexão, não baixa, não envia ou outro problema?"
-                    },
-                    'password_problem': {
-                        'message': "Problema de senha. Vamos resolver:\n\n1. Sua senha do email mudou recentemente?\n2. Você ativou autenticação em 2 fatores?\n3. O provedor mudou políticas de segurança?\n\nVamos atualizar a senha no aplicativo. Qual é seu provedor de email?",
-                        'expected_responses': {
-                            'gmail': 'gmail_password_update',
-                            'outlook': 'outlook_password_update',
-                            'yahoo': 'yahoo_password_update',
-                            'corporativo': 'corporate_password_update'
-                        },
-                        'fallback_message': "Qual é seu provedor de email? Gmail, Outlook, Yahoo ou corporativo?"
-                    },
-                    'send_problem': {
-                        'message': "Problema para enviar emails. Vamos verificar:\n\n1. Os emails ficam na caixa de saída?\n2. Recebe mensagem de erro específica?\n3. O problema é com todos os destinatários?\n4. Anexos muito grandes?\n\nO que você observa quando tenta enviar?",
-                        'expected_responses': {
-                            'caixa saida': 'outbox_problem',
-                            'erro': 'send_error_analysis',
-                            'todos': 'smtp_problem',
-                            'anexos': 'attachment_size_problem',
-                            'grandes': 'attachment_size_problem'
-                        },
-                        'fallback_message': "O que acontece quando tenta enviar? Fica na caixa de saída, dá erro, problema com todos ou anexos grandes?"
-                    },
-                    'receive_problem': {
-                        'message': "Problema para receber emails. Vamos verificar:\n\n1. Há quanto tempo não recebe emails?\n2. A caixa de entrada está cheia?\n3. Emails vão para spam?\n4. Problema com remetentes específicos?\n\nHá quanto tempo não recebe emails novos?",
-                        'expected_responses': {
-                            'hoje': 'recent_receive_problem',
-                            'ontem': 'recent_receive_problem',
-                            'dias': 'old_receive_problem',
-                            'semana': 'old_receive_problem',
-                            'cheia': 'mailbox_full',
-                            'spam': 'spam_problem'
-                        },
-                        'fallback_message': "Há quanto tempo não recebe emails? Hoje, dias, semana, ou a caixa está cheia?"
+                            'nao': 'escalate_support',
+                            'não': 'escalate_support',
+                            'no': 'escalate_support',
+                        }
                     },
                     'escalate_support': {
-                        'message': "O problema parece mais complexo. Recomendo:\n\n• Contatar suporte do provedor de email\n• Verificar configurações avançadas\n• Considerar reconfiguração completa\n• Backup dos emails importantes\n\nPosso ajudar com configuração básica, mas problemas complexos podem precisar de suporte especializado.",
-                        'expected_responses': {},
-                        'solution': "Caso escalado para suporte especializado do provedor."
+                        'message': "O problema parece mais complexo. Recomendo entrar em contato com o suporte do seu provedor de e-mail. Eles poderão te ajudar com configurações mais avançadas. Posso te ajudar com mais alguma coisa?",
+                        'expected_responses': {
+                            'sim': 'flow_continue',
+                            'yes': 'flow_continue',
+                            'nao': 'flow_exit',
+                            'não': 'flow_exit',
+                            'no': 'flow_exit'
+                        }
                     },
                     'success': {
-                        'message': "Fantástico! 🎉 Seu email está configurado e funcionando perfeitamente!\n\nDicas para manter o email funcionando:\n• Mantenha senhas atualizadas\n• Configure backup regular\n• Organize pastas e regras\n• Mantenha aplicativo atualizado\n\nPosso ajudar com mais alguma coisa?",
+                        'message': "Excelente! Seu e-mail está configurado e funcionando perfeitamente! Posso te ajudar com mais alguma coisa?",
+                        'expected_responses': {
+                            'sim': 'flow_continue',
+                            'yes': 'flow_continue',
+                            'nao': 'flow_exit',
+                            'não': 'flow_exit',
+                            'no': 'flow_exit'
+                        }
+                    },
+                    'flow_continue': {
+                        'message': "Ótimo! Posso ajudar com:\n\n- Redefinição de senhas\n- Problemas com impressora\n- Configuração de e-mail",
+                        'expected_responses': {
+                            'senha': 'password_recovery',
+                            'impressora': 'printer_troubleshooting',
+                            'email': 'email_configuration',
+                            'nao': 'flow_exit',
+                            'não': 'flow_exit',
+                        },
+                        'solution': "Oferecendo menu principal."
+                    },
+                    'flow_exit': {
+                        'message': "Foi um prazer ajudar! Tenha um ótimo dia. 😊",
                         'expected_responses': {},
-                        'solution': "Email configurado e funcionando com sucesso."
+                        'solution': "O usuário optou por sair do fluxo de e-mail."
                     }
                 }
             }
@@ -1286,7 +1018,8 @@ class LogicalInferenceEngine:
         self.conversation_context[user_id] = {
             'flow_name': flow_name,
             'current_step': 'start',
-            'state': 'interactive_flow'
+            'state': 'interactive_flow',
+            'fallback_count': 0
         }
         
         # Retornar primeira mensagem do fluxo
@@ -1321,7 +1054,17 @@ class LogicalInferenceEngine:
         
         # Se não encontrou correspondência, usar fallback
         if not next_step:
-            return step_data.get('fallback_message', "Não entendi sua resposta. Pode tentar novamente?")
+            context['fallback_count'] += 1
+            if context['fallback_count'] >= 2:
+                # Se 2 ou mais tentativas falharam, oferece ajuda
+                context['fallback_count'] = 0
+                return "Parece que não estou entendendo. Por favor, tente responder com as opções que eu te dei ou me diga 'não sei' para que eu possa te ajudar de outra forma."
+            else:
+                formatted_options = "\n- " + "\n- ".join(step_data['expected_responses'].keys())
+                return f"Desculpe, não entendi. Por favor, tente responder com as seguintes opções: {formatted_options}"
+        
+        # Resetar o contador de tentativas se a resposta for válida
+        context['fallback_count'] = 0
         
         # Atualizar contexto para próximo passo
         context['current_step'] = next_step
@@ -1346,7 +1089,6 @@ class LogicalInferenceEngine:
         """Inicia diagnóstico (compatibilidade com sistema antigo para Wi-Fi)"""
         # Mapear diagnósticos antigos para novos fluxos interativos
         flow_mapping = {
-            'wifi_troubleshooting': 'wifi_troubleshooting',
             'password_recovery': 'password_recovery',
             'printer_troubleshooting': 'printer_troubleshooting',
             'email_configuration': 'email_configuration'
@@ -1371,15 +1113,6 @@ class EnhancedChatbot:
         
         # Base de conhecimento expandida
         self.knowledge_base = {
-            "wifi": {
-                "keywords": ["wifi", "wi-fi", "internet", "rede", "conexao", "conectar", "wireless", "sem fio", "roteador", "modem", "router", "sinal", "banda larga"],
-                "phrases": [
-                    "como configurar wifi", "nao consigo conectar na internet", "wifi nao funciona",
-                    "problema com internet", "rede sem fio", "configurar roteador", "senha do wifi",
-                    "internet lenta", "sinal fraco", "nao conecta no wifi", "wifi desconectando"
-                ],
-                "confidence_threshold": 1.5
-            },
             "senha": {
                 "keywords": ["senha", "password", "esqueci", "resetar", "redefinir", "recuperar", "login", "acesso", "credencial"],
                 "phrases": [
@@ -1426,12 +1159,6 @@ class EnhancedChatbot:
         for farewell in self.farewells:
             if farewell in tokens:
                 return "farewell", 3.0
-        
-        # Verificar diagnósticos
-        if "diagnostico" in tokens:
-            for topic in self.knowledge_base.keys():
-                if topic in tokens:
-                    return f"diagnostic_{topic}", 3.0
         
         # Classificação por similaridade
         best_intent = None
@@ -1482,7 +1209,7 @@ class EnhancedChatbot:
                     # Limpar contexto e voltar ao estado inicial
                     del self.inference_engine.conversation_context[user_id]
                     return {
-                        "response": "Ótimo! Como posso ajudá-lo agora? Posso auxiliar com:\n\n• Configuração de Wi-Fi\n• Redefinição de senhas\n• Problemas com impressora\n• Configuração de email\n\nOu digite 'diagnóstico' seguido do problema para um atendimento personalizado.",
+                        "response": "Ótimo! Como posso ajudá-lo agora? Posso auxiliar com:\n\n- Redefinição de senhas\n- Problemas com impressora\n- Configuração de e-mail",
                         "type": "menu",
                         "confidence": 3.0
                     }
@@ -1492,6 +1219,21 @@ class EnhancedChatbot:
                     return {
                         "response": "Foi um prazer ajudá-lo! Se precisar de mais alguma coisa, estarei aqui. Tenha um ótimo dia! 😊",
                         "type": "farewell",
+                        "confidence": 3.0
+                    }
+                # Adicionar reconhecimento das opções do menu
+                intent, confidence = self.classify_intent_advanced(message)
+                if intent in ['senha', 'impressora', 'email']:
+                    flow_mapping = {
+                        'senha': 'password_recovery',
+                        'impressora': 'printer_troubleshooting',
+                        'email': 'email_configuration',
+                    }
+                    flow_name = flow_mapping.get(intent)
+                    response = self.inference_engine.start_interactive_flow(flow_name, user_id)
+                    return {
+                        "response": response,
+                        "type": "interactive_flow_start",
                         "confidence": 3.0
                     }
                 else:
@@ -1506,17 +1248,12 @@ class EnhancedChatbot:
         intent, confidence = self.classify_intent_advanced(message)
         
         # Verificar se é comando para iniciar fluxo interativo
-        if intent in ['wifi', 'senha', 'impressora', 'email'] or intent.startswith('diagnostic_'):
+        if intent in ['senha', 'impressora', 'email']:
             # Mapear intenções para fluxos
             flow_mapping = {
-                'wifi': 'wifi_troubleshooting',
                 'senha': 'password_recovery', 
                 'impressora': 'printer_troubleshooting',
                 'email': 'email_configuration',
-                'diagnostic_wifi': 'wifi_troubleshooting',
-                'diagnostic_senha': 'password_recovery',
-                'diagnostic_impressora': 'printer_troubleshooting',
-                'diagnostic_email': 'email_configuration'
             }
             
             flow_name = flow_mapping.get(intent)
@@ -1531,7 +1268,7 @@ class EnhancedChatbot:
         # Respostas para outros tipos de intenção
         if intent == "greeting":
             return {
-                "response": "Olá! Sou seu assistente de suporte técnico com IA avançada. Como posso ajudá-lo hoje?\n\nPosso auxiliar com:\n• Configuração de Wi-Fi\n• Redefinição de senhas\n• Problemas com impressora\n• Configuração de email",
+                "response": "Olá! Sou seu assistente de suporte técnico com IA avançada. Como posso ajudá-lo hoje?\n\nPosso auxiliar com:\n- Redefinição de senhas\n- Problemas com impressora\n- Configuração de e-mail",
                 "type": "greeting",
                 "confidence": confidence
             }
@@ -1556,13 +1293,14 @@ class EnhancedChatbot:
             
             if recognized_topics:
                 topics_text = ", ".join(recognized_topics)
-                fallback_response = f"Não entendi completamente, mas notei que você mencionou algo sobre {topics_text}. Você está com problemas relacionados a isso?\n\nPosso ajudar com: configuração de Wi-Fi, redefinição de senhas, problemas com impressora ou configuração de email."
+                fallback_response = f"Não entendi completamente, mas notei que você mencionou algo sobre {topics_text}. Você está com problemas relacionados a isso?\n\nPosso ajudar com: redefinição de senhas, problemas com impressora ou configuração de e-mail."
             else:
-                fallback_response = f"Desculpe, não consegui entender sua pergunta com confiança suficiente (confiança: {confidence:.1f}).\n\nPosso ajudar com:\n• Configuração de Wi-Fi\n• Redefinição de senhas\n• Problemas com impressora\n• Configuração de email\n\nPode reformular sua pergunta ou ser mais específico?"
+                fallback_response = f"Desculpe, não consegui entender sua pergunta com confiança suficiente (confiança: {confidence:.1f}).\n\nPosso ajudar com:\n- Redefinição de senhas\n- Problemas com impressora\n- Configuração de e-mail\n\nPode reformular sua pergunta ou ser mais específico?"
             
             return {
                 "response": fallback_response,
                 "type": "unknown",
                 "confidence": confidence
             }
-
+        
+        # python src/main.py
